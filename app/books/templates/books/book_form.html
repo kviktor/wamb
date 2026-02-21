@@ -1,0 +1,307 @@
+{% extends 'base.html' %} {% block title %}{% if object %}Edit Book{% else %}New
+    Book{% endif %}{% endblock %} {% block content %}
+        <article>
+            <h3>{% if object %}Edit Book{% else %}Add New Book{% endif %}</h3>
+
+            {% if not object %}
+
+                <div class="tabs">
+                    <a data-ui="#isbn-tab" class="active">
+                        <i>search</i>
+                        <span>Add by ISBN</span>
+                    </a>
+                    <a data-ui="#url-tab">
+                        <i>link</i>
+                        <span>Add by URL</span>
+                    </a>
+                    <a data-ui="#manual-tab">
+                        <i>edit</i>
+                        <span>Manual Entry</span>
+                    </a>
+                </div>
+
+                <div class="page active" id="isbn-tab">
+                    {% partialdef isbn-section inline %}
+                        <form
+                            method="post"
+                            action="{% url 'book-create-isbn' %}"
+                            hx-post="{% url 'book-create-isbn' %}"
+                            hx-swap="outerHTML"
+                            hx-disabled-elt="find button"
+                        >
+                            {% csrf_token %} {% if isbn_form.errors %}
+                                <div class="error-text padding">
+                                    <i>error</i>
+                                    <span>Please correct the errors below</span>
+                                </div>
+                            {% endif %}
+
+                            <div class="grid">
+                                <div class="s12 m6">
+                                    <div
+                                        class="field label border {% if isbn_form.isbn.errors %}invalid{% endif %}"
+                                    >
+                                        {{ isbn_form.isbn }}
+                                        <label>ISBN</label>
+                                        <output
+                                        >Enter the ISBN to fetch book information
+                                            automatically</output
+                                            >
+                                            {% if isbn_form.isbn.errors %}
+                                                <output class="invalid"
+                                                >{{ isbn_form.isbn.errors.0 }}</output
+                                                    >
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="s12 m6">
+                                        <div class="field label border">
+                                            {{ isbn_form.shelf }}
+                                            <label>Shelf</label>
+                                            <output
+                                            >Will be put to the rightmost longer text</output
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="space"></div>
+                                    <nav>
+                                        <button type="submit" class="button">
+                                            <i>search</i>
+                                            <span>Add Book</span>
+                                        </button>
+                                        <a href="{% url 'book-list' %}" class="button border">
+                                            <i>cancel</i>
+                                            <span>Cancel</span>
+                                        </a>
+                                    </nav>
+                                </form>
+                    {% endpartialdef isbn-section %}
+                </div>
+
+                <div class="page" id="url-tab">
+                    {% partialdef url-section inline %}
+                        <form
+                            method="post"
+                            action="{% url 'book-create-url' %}"
+                            hx-post="{% url 'book-create-url' %}"
+                            hx-swap="outerHTML"
+                            hx-disabled-elt="find button"
+                        >
+                            {% csrf_token %} {% if url_form.errors %}
+                                <div class="error-text padding">
+                                    <i>error</i>
+                                    <span>Please correct the errors below</span>
+                                </div>
+                            {% endif %}
+
+                            <div class="grid">
+                                <div class="s12 m6">
+                                    <div
+                                        class="field label border {% if url_form.url.errors %}invalid{% endif %}"
+                                    >
+                                        {{ url_form.url }}
+                                        <label>URL</label>
+                                        <output
+                                        >Enter a book URL (e.g. moly.hu) to fetch book
+                                            information automatically</output
+                                            >
+                                            {% if url_form.url.errors %}
+                                                <output class="invalid"
+                                                >{{ url_form.url.errors.0 }}</output
+                                                    >
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="s12 m6">
+                                        <div class="field label border">
+                                            {{ url_form.shelf }}
+                                            <label>Shelf</label>
+                                            <output
+                                            >Will be put to the rightmost longer text</output
+                                                >
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="space"></div>
+                                    <nav>
+                                        <button type="submit" class="button">
+                                            <i>add</i>
+                                            <span>Add Book</span>
+                                        </button>
+                                        <a href="{% url 'book-list' %}" class="button border">
+                                            <i>cancel</i>
+                                            <span>Cancel</span>
+                                        </a>
+                                    </nav>
+                                </form>
+                    {% endpartialdef url-section %}
+                </div>
+
+                <div class="page" id="manual-tab">
+                    {% partialdef manual-section inline %}
+                        <form
+                            method="post"
+                            action="{% url 'book-create-manual' %}"
+                            hx-post="{% url 'book-create-manual' %}"
+                            hx-swap="outerHTML"
+                            hx-disabled-elt="find button"
+                        >
+                            {% csrf_token %} {% if manual_form.errors %}
+                                <div class="error-text padding">
+                                    <i>error</i>
+                                    <span>Please correct the errors below</span>
+                                </div>
+                            {% endif %}
+
+                            <div class="field label border suffix">
+                                {{ manual_form.shelf }}
+                                <label>Shelf</label>
+                                <i>arrow_drop_down</i>
+                                {% if manual_form.shelf.errors %}
+                                    <span class="error">{{ manual_form.shelf.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="field label border">
+                                {{ manual_form.title }}
+                                <label>Title</label>
+                                {% if manual_form.title.errors %}
+                                    <span class="error">{{ manual_form.title.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="field label border suffix">
+                                {{ manual_form.authors }}
+                                <label>Authors</label>
+                                <i>arrow_drop_down</i>
+                                {% if manual_form.authors.errors %}
+                                    <span class="error">{{ manual_form.authors.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="field label border">
+                                {{ manual_form.isbn }}
+                                <label>ISBN</label>
+                                {% if manual_form.isbn.errors %}
+                                    <span class="error">{{ manual_form.isbn.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="field label border">
+                                {{ manual_form.publication_year }}
+                                <label>Publication Year</label>
+                                {% if manual_form.publication_year.errors %}
+                                    <span class="error">{{ manual_form.publication_year.errors.0 }}</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="field label border">
+                                {{ manual_form.position }}
+                                <label>Position</label>
+                                <span class="helper"
+                                >Position of the book within the shelf. From left to
+                                    right.</span
+                                    >
+                                    {% if manual_form.position.errors %}
+                                        <span class="error">{{ manual_form.position.errors.0 }}</span>
+                                    {% endif %}
+                                </div>
+
+                                <div class="space"></div>
+
+                                <nav>
+                                    <button type="submit" class="button">
+                                        <i>save</i>
+                                        <span>Save</span>
+                                    </button>
+                                    <a href="{% url 'book-list' %}" class="button border">
+                                        <i>cancel</i>
+                                        <span>Cancel</span>
+                                    </a>
+                                </nav>
+                            </form>
+                    {% endpartialdef manual-section %}
+                </div>
+
+            {% else %}
+                <form method="post">
+                    {% csrf_token %} {% if form.errors %}
+                        <div class="error-text padding">
+                            <i>error</i>
+                            <span>Please correct the errors below</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="field label border suffix">
+                        {{ form.shelf }}
+                        <label>Shelf</label>
+                        <i>arrow_drop_down</i>
+                        {% if form.shelf.errors %}
+                            <span class="error">{{ form.shelf.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border">
+                        {{ form.title }}
+                        <label>Title</label>
+                        {% if form.title.errors %}
+                            <span class="error">{{ form.title.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border suffix">
+                        {{ form.authors }}
+                        <label>Authors</label>
+                        <i>arrow_drop_down</i>
+                        {% if form.authors.errors %}
+                            <span class="error">{{ form.authors.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border">
+                        {{ form.isbn }}
+                        <label>ISBN</label>
+                        {% if form.isbn.errors %}
+                            <span class="error">{{ form.isbn.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border">
+                        {{ form.publication_year }}
+                        <label>Publication Year</label>
+                        {% if form.publication_year.errors %}
+                            <span class="error">{{ form.publication_year.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border">
+                        {{ form.position }}
+                        <label>Position</label>
+                        <span class="helper"
+                        >Position of the book within the shelf. From left to
+                            right.</span
+                            >
+                            {% if form.position.errors %}
+                                <span class="error">{{ form.position.errors.0 }}</span>
+                            {% endif %}
+                        </div>
+
+                        <div class="space"></div>
+
+                        <nav>
+                            <button type="submit" class="button">
+                                <i>save</i>
+                                <span>Save</span>
+                            </button>
+                            <a href="{% url 'book-list' %}" class="button border">
+                                <i>cancel</i>
+                                <span>Cancel</span>
+                            </a>
+                        </nav>
+                    </form>
+            {% endif %}
+        </article>
+    {% endblock %}

@@ -1,0 +1,68 @@
+{% extends 'base.html' %} {% block title %}Book Shelves{% endblock %} {% block
+content %}
+<div class="card">
+    <h1>Book Shelves</h1>
+
+    <div class="actions">
+        <a href="{% url 'bookshelf-create' %}" class="btn btn-success"
+        >Add New Book Shelf</a
+            >
+        </div>
+
+        {% if bookshelves %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Book Case</th>
+                        <th>Position</th>
+                        <th>Books</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bookshelf in bookshelves %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'bookshelf-detail' bookshelf.pk %}"
+                                >{{ bookshelf.name }}</a
+                                    >
+                                </td>
+                                <td>
+                                    <a href="{% url 'bookcase-detail' bookshelf.bookcase.pk %}"
+                                    >{{ bookshelf.bookcase.name }}</a
+                                        >
+                                    </td>
+                                    <td>{{ bookshelf.position }}</td>
+                                    <td>{{ bookshelf.books.count }}</td>
+                                    <td>{{ bookshelf.created_at|date:"Y-m-d" }}</td>
+                                    <td>
+                                        <a
+                                            href="{% url 'bookshelf-detail' bookshelf.pk %}"
+                                            class="btn btn-secondary"
+                                        >View</a
+                                            >
+                                            <a
+                                                href="{% url 'bookshelf-update' bookshelf.pk %}"
+                                                class="btn"
+                                            >Edit</a
+                                                >
+                                                <a
+                                                    href="{% url 'bookshelf-delete' bookshelf.pk %}"
+                                                    class="btn btn-danger"
+                                                >Delete</a
+                                                    >
+                                                </td>
+                                            </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <p>
+                No book shelves found.
+                <a href="{% url 'bookshelf-create' %}">Create one now</a>.
+            </p>
+        {% endif %}
+    </div>
+    {% endblock %}

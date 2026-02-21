@@ -1,0 +1,70 @@
+{% extends "base.html" %} {% block content %}
+    <article class="no-padding">
+        <div class="padding">
+            <h3>
+                <i>shelves</i>
+                Bookcases
+                <a href="{% url 'bookcase-create' %}" class="button right absolute">
+                    <i>add</i>
+                    <span class="max l m">Add New Bookcase</span>
+                </a>
+            </h3>
+        </div>
+
+        {% if bookcases %}
+            <table class="border">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th class="center-align">Shelves</th>
+                        <th>Created</th>
+                        <th class="center-align">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bookcase in bookcases %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'bookcase-detail' bookcase.pk %}"
+                                >{{ bookcase.name }}</a
+                                    >
+                                </td>
+                                <td>{{ bookcase.description|truncatewords:10 }}</td>
+                                <td class="center-align">{{ bookcase.shelves.count }}</td>
+                                <td>{{ bookcase.created_at|date:"Y-m-d" }}</td>
+                                <td class="center-align">
+                                    <a
+                                        href="{% url 'bookcase-detail' bookcase.pk %}"
+                                        class="button small-round"
+                                    >
+                                        <i>visibility</i>
+                                    </a>
+                                    <a
+                                        href="{% url 'bookcase-update' bookcase.pk %}"
+                                        class="button small-round"
+                                    >
+                                        <i>edit</i>
+                                    </a>
+                                </td>
+                            </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="center-align">
+                                No book cases found.
+                                <a href="{% url 'bookcase-create' %}">Create one now</a>.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="padding">
+                <p>
+                    No book cases found.
+                    <a href="{% url 'bookcase-create' %}">Create one now</a>.
+                </p>
+            </div>
+        {% endif %}
+    </article>
+{% endblock %}

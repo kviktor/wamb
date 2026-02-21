@@ -1,0 +1,99 @@
+{% load django_htmx %}
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{% block title %}WAMB - Where Are My Books{% endblock %}</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/beercss@3.13.0/dist/cdn/beer.min.css"
+            rel="stylesheet"
+        />
+        <script
+            type="module"
+            src="https://cdn.jsdelivr.net/npm/beercss@3.13.0/dist/cdn/beer.min.js"
+        ></script>
+        <script
+            type="module"
+            src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.2/dist/cdn/material-dynamic-colors.min.js"
+        ></script>
+        {% htmx_script %}
+    </head>
+    <body class="light" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
+        <nav class="left max l">
+            <header>
+                <nav>
+                    <i class="circle extra primary padding">auto_stories</i>
+                    <h6>WAMB</h6>
+                </nav>
+            </header>
+            <a href="{% url 'bookcase-list' %}">
+                <i>home</i>
+                <div>Home</div>
+            </a>
+            <a href="{% url 'book-list' %}">
+                <i>book_2</i>
+                <div>Books</div>
+            </a>
+            <a href="{% url 'bookcase-list' %}">
+                <i>shelves</i>
+                <div>Bookcases</div>
+            </a>
+            <a>
+                <i>person_search</i>
+                <div>Authors</div>
+            </a>
+            <a class="absolute bottom">
+                <i>account_circle</i>
+                <div>User</div>
+            </a>
+        </nav>
+
+        <nav class="left m">
+            <header>
+                <i class="circle extra primary padding">auto_stories</i>
+            </header>
+            <a href="{% url 'bookcase-list' %}">
+                <i>home</i>
+                <div>Home</div>
+            </a>
+            <a href="{% url 'book-list' %}">
+                <i>book_2</i>
+                <div>Books</div>
+            </a>
+            <a href="{% url 'bookcase-list' %}">
+                <i>shelves</i>
+                <div>Bookcases</div>
+            </a>
+            <a>
+                <i>person_search</i>
+                <div>Authors</div>
+            </a>
+            <a class="absolute bottom">
+                <i>account_circle</i>
+                <div>User</div>
+            </a>
+        </nav>
+
+        <nav class="bottom s">
+            <a href="{% url 'bookcase-list' %}">
+                <i>home</i>
+                <div>Home</div>
+            </a>
+            <a href="{% url 'book-list' %}">
+                <i>book_2</i>
+                <div>Books</div>
+            </a>
+            <a href="{% url 'bookcase-list' %}">
+                <i>shelves</i>
+                <div>Bookcases</div>
+            </a>
+            <a>
+                <i>person_search</i>
+                <div>Authors</div>
+            </a>
+        </nav>
+
+        <main class="responsive">{% block content %}{% endblock %}</main>
+    </body>
+</html>

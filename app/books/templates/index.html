@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="grid">
+        <div class="s2">
+            <button id="startScan">Start</button>
+        </div>
+        <div class="s2">
+            <button id="stopScan">Stop</button>
+        </div>
+        <div class="s8">
+            <div class="field border label">
+                <select id="camera">
+                    <option value="">Select a camera...</option>
+                </select>
+                <label>Camera</label>
+            </div>
+        </div>
+    </div>
+
+    <div class="space"></div>
+
+    <div id="interactive" class="viewport"></div>
+
+    <div class="snackbar primary" id="feedback">Some text here</div>
+
+    <style>
+        #interactive video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+
+    <script>
+        const startBtn = document.getElementById("startScan");
+        const stopBtn = document.getElementById("stopScan");
+        const interactive = document.getElementById("interactive");
+        const cameraSelect = document.getElementById("camera");
+        const snackbar = document.getElementById("feedback");
+        var selectedDeviceId = null;
+
+        function startScan() {
+            const config = {
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: document.querySelector("#interactive"),
+                    constraints: {
+                        deviceId: selectedDeviceId,
+                    },
+                },
+                decoder: {
+                    readers: ["ean_reader"],
+                },
+                locate: true,
+                numOfWorkers: navigator.hardwareConcurrency || 4,
+                frequency: 10,
+            };
+
+            Quagga.init(config, function (err) {
+                if (err) {
+                    console.error(err);
+                    stopScan();
+                    return;
+                }
+                Quagga.start();
+            });
+        }
+
+        function stopScan() {
+            Quagga.stop();
+        }
+
+        cameraSelect.addEventListener("change", async function () {
+            selectedDeviceId = this.value;
+
+            stopScan();
+            setTimeout(() => startScan(), 300);
+        });
+
+        startBtn.addEventListener("click", function() {
+            startScan();
+        });
+
+        stopBtn.addEventListener("click", function() {
+            stopScan();
+        });
+
+        async function populateCameraList() {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                video: true,
+            });
+
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(
+                (device) => device.kind === "videoinput",
+            );
+
+            cameraSelect.innerHTML = '<option value="">Select a camera...</option>';
+            videoDevices.forEach((device, index) => {
+                const option = document.createElement("option");
+                option.value = device.deviceId;
+                option.text = device.label;
+                cameraSelect.appendChild(option);
+
+                if (
+                    device.facingMode == "environment" ||
+                    device.label.indexOf("facing back") >= 0
+                )
+                    selectedDeviceId = device.deviceId;
+                cameraSelect.value = device.deviceId;
+            });
+
+            if (!selectedDeviceId === null && videoDevices.length > 0) {
+                cameraSelect.value = videoDevices[0].deviceId;
+                selectedDeviceId = videoDevices[0].deviceId;
+            }
+
+            startScan();
+        }
+
+        async function queryISBN(isbn) {
+            feedback.className = "snackbar primary"
+            feedback.innerHTML = '<progress class="primary circle small"></progress>  </i> Looking up ' + isbn;
+            ui("#feedback", 20000);
+
+            try {
+                const response = await fetch('/isbn/?isbn=' + isbn, {
+                    method: 'GET',
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.text();
+                console.log('Success:', data);
+
+                feedback.className = "snackbar light-green"
+                feedback.innerHTML = "Found " + data;
+                ui("#feedback", 3000);
+
+            } catch (error) {
+                feedback.innerHTML = "Could not find this ISBN";
+                ui("#feedback", 3000);
+            }
+        };
+
+        populateCameraList();
+
+        Quagga.onDetected(function (result) {
+            const code = result.codeResult.code;
+            alert(code + " (" + code.length);
+            if (code.length === 13 || code.length === 10) {
+                queryISBN(code);
+                console.log("Found code: " + code);
+            }
+        });
+    </script>
+{% endblock %}

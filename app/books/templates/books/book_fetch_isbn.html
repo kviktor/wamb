@@ -1,0 +1,79 @@
+{% extends 'base.html' %} {% block title %}Fetch Book from ISBN{% endblock %} {%
+block content %}
+<div class="card">
+    <h1>Fetch Book from OpenLibrary</h1>
+    <p style="color: #666; margin-bottom: 1.5rem">
+        Enter an ISBN to automatically fetch book information from OpenLibrary.
+        The book will be created with all available metadata including title,
+        description, authors, and publication year.
+    </p>
+
+    <form method="post">
+        {% csrf_token %} {% if form.errors %}
+            <div style="color: #e74c3c; margin-bottom: 1rem">
+                <strong>Please correct the errors below:</strong>
+            </div>
+        {% endif %}
+
+        <div class="form-group">
+            <label for="id_isbn" class="required">ISBN:</label>
+            {{ form.isbn }} {% if form.isbn.help_text %}
+                <small style="display: block; margin-top: 0.25rem; color: #666"
+                >{{ form.isbn.help_text }}</small
+                    >
+            {% endif %} {% if form.isbn.errors %}
+                <ul class="errorlist">
+                    {% for error in form.isbn.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label for="id_shelf" class="required">Bookshelf:</label>
+            {{ form.shelf }} {% if form.shelf.help_text %}
+                <small style="display: block; margin-top: 0.25rem; color: #666"
+                >{{ form.shelf.help_text }}</small
+                    >
+            {% endif %} {% if form.shelf.errors %}
+                <ul class="errorlist">
+                    {% for error in form.shelf.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="actions">
+            <button type="submit" class="btn btn-success">
+                Fetch Book Data
+            </button>
+            <a href="{% url 'book-list' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+
+<div class="card">
+    <h2>About ISBN Lookup</h2>
+    <p>
+        This feature connects to the
+        <a
+            href="https://openlibrary.org/"
+            target="_blank"
+            style="color: #3498db"
+        >OpenLibrary API</a
+            >
+            to automatically retrieve book information. You can use either ISBN-10
+            or ISBN-13 format, with or without hyphens.
+        </p>
+        <p style="margin-top: 1rem">
+            <strong>Example ISBNs:</strong>
+        </p>
+        <ul style="margin-left: 2rem; margin-top: 0.5rem">
+            <li>ISBN-10: 0451524934</li>
+            <li>ISBN-13: 978-0451524935</li>
+            <li>With hyphens: 978-0-451-52493-5</li>
+        </ul>
+    </div>
+    {% endblock %}

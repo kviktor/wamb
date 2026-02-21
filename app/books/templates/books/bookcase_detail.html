@@ -1,0 +1,109 @@
+{% extends 'base.html' %} {% block title %}{{ bookcase.name }}{% endblock %}
+{% block content %}
+    <article>
+        <nav>
+            <a href="{% url 'bookcase-list' %}" class="button border">
+                <i>arrow_back</i>
+                <span>Back to List</span>
+            </a>
+            <div class="max"></div>
+            <a href="{% url 'bookcase-update' bookcase.pk %}" class="button">
+                <i>edit</i>
+                <span>Edit</span>
+            </a>
+        </nav>
+
+        <h3>{{ bookcase.name }}</h3>
+
+        <div class="space"></div>
+
+        <div class="grid">
+            <div class="s12 m6">
+                <div class="field label border">
+                    <input type="text" value="{{ bookcase.name }}" readonly />
+                    <label>Name</label>
+                </div>
+            </div>
+            <div class="s12 m6">
+                <div class="field label border">
+                    <input
+                        type="text"
+                        value="{{ bookcase.created_at|date:'F d, Y H:i' }}"
+                        readonly
+                    />
+                    <label>Created</label>
+                </div>
+            </div>
+            <div class="s12">
+                <div class="field textarea label border">
+                    <textarea readonly>
+                        {{ bookcase.description|default:"No description" }}</textarea
+                        >
+                        <label>Description</label>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="no-padding">
+            <div class="padding">
+                <h5>Shelves</h5>
+                <nav>
+                    <a href="{% url 'bookshelf-create' bookcase.pk %}" class="button">
+                        <i>add</i>
+                        <span>Add New Shelf</span>
+                    </a>
+                </nav>
+            </div>
+
+            {% if bookcase.shelves.all %}
+                <table class="border">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th class="center-align">Position</th>
+                            <th class="center-align">Books</th>
+                            <th class="center-align">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for shelf in bookcase.shelves.all %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'bookshelf-detail' shelf.pk %}"
+                                    >{{ shelf.name }}</a
+                                        >
+                                    </td>
+                                    <td class="center-align">
+                                        V: {{ shelf.vertical_position }}, H: {{
+                                        shelf.horizontal_position }}
+                                    </td>
+                                    <td class="center-align">{{ shelf.books.count }}</td>
+                                    <td class="center-align">
+                                        <a
+                                            href="{% url 'bookshelf-detail' shelf.pk %}"
+                                            class="button small-round"
+                                        >
+                                            <i>visibility</i>
+                                        </a>
+                                        <a
+                                            href="{% url 'bookshelf-update' bookcase.pk shelf.pk %}"
+                                            class="button small-round"
+                                        >
+                                            <i>edit</i>
+                                        </a>
+                                    </td>
+                                </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="padding">
+                    <p>
+                        No shelves in this book case yet.
+                        <a href="{% url 'bookshelf-create' bookcase.pk %}">Add one now</a>.
+                    </p>
+                </div>
+            {% endif %}
+        </article>
+{% endblock %}

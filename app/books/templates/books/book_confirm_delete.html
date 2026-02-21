@@ -1,0 +1,48 @@
+{% extends 'base.html' %} {% block title %}Delete Book{% endblock %} {% block content %}
+    <article>
+        <h3>Delete Book</h3>
+
+        <div class="large-space"></div>
+
+        <p class="large-text">
+            Are you sure you want to delete <strong>{{ book.title }}</strong>?
+        </p>
+
+        <div class="space"></div>
+
+        <div class="border round padding">
+            <div class="grid">
+                <div class="s12"><strong>Title:</strong> {{ book.title }}</div>
+                <div class="s12">
+                    <strong>Authors:</strong>
+                    {% for author in book.authors.all %} {{ author.name }}{% if not forloop.last %}, {% endif %} {% empty %} - {% endfor %}
+                </div>
+                <div class="s12">
+                    <strong>ISBN:</strong> {{ book.isbn|default:"-" }}
+                </div>
+                {% if book.shelf %}
+                    <div class="s12">
+                        <strong>Location:</strong> {{ book.shelf.bookcase.name }} > {{
+                        book.shelf.name }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="space"></div>
+
+        <form method="post">
+            {% csrf_token %}
+            <nav>
+                <button type="submit" class="button">
+                    <i>delete</i>
+                    <span>Yes, Delete</span>
+                </button>
+                <a href="{% url 'book-detail' book.pk %}" class="button border">
+                    <i>cancel</i>
+                    <span>Cancel</span>
+                </a>
+            </nav>
+        </form>
+    </article>
+{% endblock %}
