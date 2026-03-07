@@ -198,18 +198,6 @@
                                 {% endif %}
                             </div>
 
-                            <div class="field label border">
-                                {{ manual_form.position }}
-                                <label>Position</label>
-                                <span class="helper"
-                                >Position of the book within the shelf. From left to
-                                    right.</span
-                                    >
-                                    {% if manual_form.position.errors %}
-                                        <span class="error">{{ manual_form.position.errors.0 }}</span>
-                                    {% endif %}
-                                </div>
-
                                 <div class="space"></div>
 
                                 <nav>
@@ -276,18 +264,6 @@
                             <span class="error">{{ form.publication_year.errors.0 }}</span>
                         {% endif %}
                     </div>
-
-                    <div class="field label border">
-                        {{ form.position }}
-                        <label>Position</label>
-                        <span class="helper"
-                        >Position of the book within the shelf. From left to
-                            right.</span
-                            >
-                            {% if form.position.errors %}
-                                <span class="error">{{ form.position.errors.0 }}</span>
-                            {% endif %}
-                        </div>
 
                         <div class="space"></div>
 

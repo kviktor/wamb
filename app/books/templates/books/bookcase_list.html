@@ -26,7 +26,7 @@
                     {% for bookcase in bookcases %}
                         <tr>
                             <td>
-                                <a href="{% url 'bookcase-detail' bookcase.pk %}"
+                                <a href="{% url 'bookcase-update' bookcase.pk %}"
                                 >{{ bookcase.name }}</a
                                     >
                                 </td>
@@ -35,7 +35,7 @@
                                 <td>{{ bookcase.created_at|date:"Y-m-d" }}</td>
                                 <td class="center-align">
                                     <a
-                                        href="{% url 'bookcase-detail' bookcase.pk %}"
+                                        href="{% url 'bookcase-update' bookcase.pk %}"
                                         class="button small-round"
                                     >
                                         <i>visibility</i>

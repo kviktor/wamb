@@ -31,9 +31,12 @@ class Author(TimeStampedModel):
         return self.name
 
 
-class BookCase(TimeStampedModel):
+class Bookcase(TimeStampedModel):
     name = models.CharField(max_length=128)
     description = models.TextField(blank=True)
+
+    rows = models.PositiveSmallIntegerField()
+    columns = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return self.name
@@ -41,17 +44,14 @@ class BookCase(TimeStampedModel):
 
 class BookShelf(TimeStampedModel):
     bookcase = models.ForeignKey(
-        BookCase, on_delete=models.CASCADE, related_name="shelves"
+        Bookcase, on_delete=models.CASCADE, related_name="shelves"
     )
-    name = models.CharField(max_length=200)
-    vertical_position = models.IntegerField(
-        default=0,
-        help_text="Position of the shelf within the bookcase. 0 is ground level.",
-    )
-    horizontal_position = models.IntegerField(
-        default=0,
-        help_text="Position of the shelf within the bookcase. From left to right.",
-    )
+    name = models.CharField(max_length=128)
+
+    row = models.PositiveSmallIntegerField(default=0)
+    column = models.PositiveSmallIntegerField(default=0)
+
+    config = models.JSONField(default=dict)
 
     def __str__(self):
         return f"{self.name} ({self.bookcase})"

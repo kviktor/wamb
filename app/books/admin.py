@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Author, Book, BookCase, BookShelf, Image
+from .models import Author, Book, Bookcase, BookShelf, Image
 
 
 @admin.register(Image)
@@ -13,8 +13,8 @@ class AuthorAdmin(admin.ModelAdmin):
     pass
 
 
-@admin.register(BookCase)
-class BookCaseAdmin(admin.ModelAdmin):
+@admin.register(Bookcase)
+class BookcaseAdmin(admin.ModelAdmin):
     pass
 
 

@@ -1,3 +1,6 @@
+from django.apps import apps
+from django.db.models import Count, Prefetch, Q
+from django.http import Http404, JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -8,8 +11,13 @@ from django.views.generic import (
     UpdateView,
 )
 
-from .forms import AddByISBNForm, AddByURLForm, ManualEntryForm
-from .models import Book, BookCase, BookShelf
+from .forms import (
+    AddByISBNForm,
+    AddByURLForm,
+    BookcaseCreateForm,
+    ManualEntryForm,
+)
+from .models import Book, Bookcase, BookShelf
 
 
 # TODO ignore for now
@@ -17,72 +25,38 @@ class IndexView(TemplateView):
     template_name = "index.html"
 
 
-class BookCaseListView(ListView):
-    model = BookCase
+class BookcaseListView(ListView):
+    model = Bookcase
     template_name = "books/bookcase_list.html"
     context_object_name = "bookcases"
 
 
-class BookCaseDetailView(DetailView):
-    model = BookCase
-    template_name = "books/bookcase_detail.html"
-    context_object_name = "bookcase"
-
-
-class BookCaseCreateView(CreateView):
-    model = BookCase
-    template_name = "books/bookcase_form.html"
-    fields = ["name", "description"]
+class BookcaseCreateView(CreateView):
+    model = Bookcase
+    template_name = "books/bookcase_create.html"
+    form_class = BookcaseCreateForm
     success_url = reverse_lazy("bookcase-list")
 
 
-class BookCaseUpdateView(UpdateView):
-    model = BookCase
-    template_name = "books/bookcase_form.html"
+class BookcaseUpdateView(UpdateView):
+    model = Bookcase
+    template_name = "books/bookcase_update.html"
     fields = ["name", "description"]
     success_url = reverse_lazy("bookcase-list")
+    queryset = Bookcase.objects.prefetch_related(
+        Prefetch(
+            "shelves",
+            queryset=BookShelf.objects.annotate(
+                book_count=Count("books"),
+            ),
+        ),
+    )
 
 
-class BookCaseDeleteView(DeleteView):
-    model = BookCase
+class BookcaseDeleteView(DeleteView):
+    model = Bookcase
     template_name = "books/bookcase_confirm_delete.html"
     success_url = reverse_lazy("bookcase-list")
-
-
-class BookShelfDetailView(DetailView):
-    model = BookShelf
-    template_name = "books/bookshelf_detail.html"
-    context_object_name = "bookshelf"
-
-
-class BookShelfCreateView(CreateView):
-    model = BookShelf
-    template_name = "books/bookshelf_form.html"
-    fields = ["name", "vertical_position", "horizontal_position"]
-
-    def form_valid(self, form):
-        form.instance.bookcase_id = self.kwargs["bookcase_pk"]
-        return super().form_valid(form)
-
-    def get_success_url(self):
-        return reverse_lazy("bookcase-detail", kwargs={"pk": self.kwargs["bookcase_pk"]})
-
-
-class BookShelfUpdateView(UpdateView):
-    model = BookShelf
-    template_name = "books/bookshelf_form.html"
-    fields = ["name", "vertical_position", "horizontal_position"]
-
-    def get_success_url(self):
-        return reverse_lazy("bookcase-detail", kwargs={"pk": self.kwargs["bookcase_pk"]})
-
-
-class BookShelfDeleteView(DeleteView):
-    model = BookShelf
-    template_name = "books/bookshelf_confirm_delete.html"
-
-    def get_success_url(self):
-        return reverse_lazy("bookcase-detail", kwargs={"pk": self.object.bookcase.pk})
 
 
 class BookListView(ListView):
@@ -175,7 +149,6 @@ class BookUpdateView(UpdateView):
         "authors",
         "isbn",
         "publication_year",
-        "position",
     ]
     success_url = reverse_lazy("book-list")
 

@@ -1,7 +1,11 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Book, BookShelf
+from .models import (
+    Book,
+    Bookcase,
+    BookShelf,
+)
 
 
 class AddByISBNForm(forms.ModelForm):
@@ -44,7 +48,7 @@ class AddByISBNForm(forms.ModelForm):
 class ManualEntryForm(forms.ModelForm):
     class Meta:
         model = Book
-        fields = ("shelf", "title", "authors", "isbn", "publication_year", "position")
+        fields = ("shelf", "title", "authors", "isbn", "publication_year")
 
 
 class AddByURLForm(forms.Form):
@@ -70,3 +74,33 @@ class AddByURLForm(forms.Form):
         from app.books.utils import create_book_object_from_pydantic
 
         return create_book_object_from_pydantic(self.book)
+
+
+class BookcaseCreateForm(forms.ModelForm):
+    config = forms.JSONField()
+
+    class Meta:
+        model = Bookcase
+        fields = ("name", "description", "rows", "columns", "config")
+
+    def save(self, *args, **kwargs):
+        bookcase = super().save(*args, **kwargs)
+
+        shelves = []
+        for row in self.cleaned_data["config"]:
+            for cell in row:
+                shelves.append(
+                    BookShelf(
+                        bookcase=bookcase,
+                        row=cell["row"],
+                        column=cell["col"],
+                        config={
+                            "rowspan": cell["rowspan"],
+                            "colspan": cell["colspan"],
+                        },
+                    )
+                )
+
+        BookShelf.objects.bulk_create(shelves)
+
+        return bookcase
