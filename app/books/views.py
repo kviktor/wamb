@@ -1,4 +1,5 @@
 from django.db.models import Count, Prefetch
+from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -173,3 +174,33 @@ class ISBN(TemplateView):
         if not self.book:
             resp.status_code = 400
         return resp
+
+
+def autocomplete(request):
+    mapping = {
+        "bookcase": {
+            "queryset": Bookcase.objects.prefetch_related(
+                Prefetch(
+                    "shelves",
+                    queryset=BookShelf.objects.select_related("bookcase"),
+                ),
+            ),
+            "filters": ["name__icontains"],
+            "fields": ["id", "name", "shelves_config"],
+        }
+    }
+
+    q = request.GET.get("q", "")
+    model = request.GET.get("model", "")
+    config = mapping.get(model)
+
+    results = config["queryset"].filter(**{f: q for f in config["filters"]})
+
+    return JsonResponse(
+        {
+            "results": [
+                {field: getattr(result, field) for field in config["fields"]}
+                for result in results
+            ]
+        }
+    )

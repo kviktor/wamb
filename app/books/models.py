@@ -1,3 +1,5 @@
+import itertools
+
 from django.contrib.auth import get_user_model
 from django.db import models
 
@@ -41,6 +43,27 @@ class Bookcase(TimeStampedModel):
     def __str__(self):
         return self.name
 
+    @property
+    def shelves_config(self):
+        rows = []
+        # sameish as `regroup`
+        for row in itertools.groupby(self.shelves.all(), key=lambda x: x.row):
+            rows.append(
+                [
+                    {
+                        "id": shelf.id,
+                        "location": shelf.location,
+                        "row": shelf.row,
+                        "col": shelf.column,
+                        "rowspan": shelf.config.get("rowspan"),
+                        "colspan": shelf.config.get("colspan"),
+                        "selected": False,
+                    }
+                    for shelf in list(row[1])
+                ],
+            )
+        return rows
+
 
 class BookShelf(TimeStampedModel):
     bookcase = models.ForeignKey(
@@ -52,6 +75,9 @@ class BookShelf(TimeStampedModel):
     column = models.PositiveSmallIntegerField(default=0)
 
     config = models.JSONField(default=dict)
+
+    class Meta:
+        ordering = ("row", "column")
 
     def __str__(self):
         return f"{self.name} ({self.bookcase})"

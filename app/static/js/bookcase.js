@@ -1,14 +1,22 @@
 class Bookcase {
-    constructor(targetContainer, mergeButton, configInput, config) {
+    constructor(targetContainer, config) {
         this.config = config || [];
         this.targetContainer = targetContainer;
-        this.mergeButton = mergeButton;
-        this.configInput = configInput;
         this.table = null;
         this.selectedCount = 0;
-
-        mergeButton.addEventListener("click", (event) => this.mergeSelected());
+        this.listeners = {};
     };
+
+    addEventListener(method, callback) {
+        this.listeners[method] = callback;
+    }
+
+    emit(method, payload) {
+        const callback = this.listeners[method];
+        if(typeof callback == 'function') {
+            callback(this, payload);
+        }
+    }
 
     updateRowsCols(rows, cols) {
         const config = [];
@@ -17,6 +25,7 @@ class Bookcase {
             for(var c=0; c<cols; c++) {
                 row.push(
                     {
+                        "id": null,
                         "row": r,
                         "col": c,
                         "rowspan": 1,
@@ -29,10 +38,6 @@ class Bookcase {
         }
         this.config = config;
         this.draw();
-    }
-
-    updateMergeButton() {
-        this.mergeButton.disabled = this.selectedCount < 2;
     }
 
     getCell(row, col) {
@@ -88,7 +93,6 @@ class Bookcase {
         }
         this.config = newConfig;
         this.selectedCount = 0;
-        this.updateMergeButton();
         this.draw();
     }
 
@@ -109,23 +113,99 @@ class Bookcase {
                 if(cell.selected) {
                     td.dataset.selected = true;
                 };
+                if(cell.location) {
+                    td.innerText = cell.location;
+                }
             }
         }
-
 
         if(this.table) { this.table.remove(); }
 
         this.table = table;
         this.targetContainer.appendChild(table);
         this.table.addEventListener("click", (event) => this.onClick(event));
-        this.configInput.value = JSON.stringify(this.config);
+        this.emit("updated");
     };
     onClick(event) {
         const td = event.target.closest("td");
         const cell = this.getCell(td.dataset.row, td.dataset.col);
         cell.selected = !cell.selected;
         this.draw();
-        this.selectedCount += 1;
-        this.updateMergeButton();
+        this.selectedCount += cell.selected ? 1 : -1;
+        this.emit("selected", cell);
     }
 };
+
+
+class ShelfSelector {
+    constructor(prefix, callback) {
+        this.button = document.getElementById(`${prefix}-btn`);
+        this.dialog = document.getElementById(`${prefix}-dialog`);
+        this.search = document.getElementById(`${prefix}-bookcase-search`);
+        this.results = this.dialog.getElementsByClassName("results")[0];
+
+        this.callback = callback;
+
+        this.bookcaseName = "";
+
+        this.button.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.dialog.showModal();
+        });
+
+        this.search.addEventListener("input", (e) => {
+            this.handleSearch(this.search.value);
+        });
+
+        this.dialog.getElementsByClassName("cancel")[0].addEventListener("click", (e) => {
+            e.preventDefault()
+            this.dialog.close();
+        });
+    }
+
+    async handleSearch(value) {
+        try {
+            const response = await fetch('/api/v1/autocomplete/?model=bookcase&q=' + value);
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            const data = await response.json();
+            this.createResultsList(data);
+        } catch (error) {
+            alert(error);
+        }
+    }
+
+    createResultsList(data) {
+        const element = document.createElement("div");
+
+        if(data.results.length > 0) {
+            const ul = document.createElement("ul");
+            for (const result of data.results) {
+                const li = document.createElement("li");
+                li.appendChild(document.createTextNode(result.name));
+                li.dataset.id = result.id;
+                li.dataset.config = JSON.stringify(result.shelves_config);
+
+                ul.addEventListener("click", (event) => this.onResultClick(event));
+
+                ul.appendChild(li);
+            }
+            element.appendChild(ul);
+        } else {
+            element.appendChild(document.createTextNode("No results"));
+        }
+        
+        this.results.replaceChildren(element);
+    }
+
+    onResultClick(event) {
+        this.bookcaseName = event.target.innerText;
+        const bookcase = new Bookcase(this.results, JSON.parse(event.target.dataset.config));
+        bookcase.addEventListener("selected", (_, cell) => this.onShelfClick(cell));
+        bookcase.draw();
+    };
+
+    onShelfClick(cell) {
+        this.callback(this.bookcaseName, cell);
+        this.dialog.close();
+    };
+}

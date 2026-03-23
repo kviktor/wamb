@@ -1,0 +1,35 @@
+<input type="hidden" name="shelf" id="{{ prefix }}-input"/>
+<div class="chip hide" id="{{ prefix }}-chip"></div>
+
+<button id="{{ prefix }}-btn">Select shelf</button>
+
+
+<dialog class="top" id="{{ prefix }}-dialog">
+    <div class="field label prefix border round">
+        <i>search</i>
+        <input type="text" id="{{ prefix }}-bookcase-search">
+        <label>Search for bookcase</label>
+    </div>
+    <div class="results"></div>
+    <nav class="right-align">
+        <button class="border cancel">Cancel</button>
+    </nav>
+</dialog>
+
+<script>
+    function callback(name, cell) {
+        const chip = document.getElementById("{{ prefix }}-chip");
+        const button = document.getElementById("{{ prefix }}-btn");
+        const input = document.getElementById("{{ prefix }}-input");
+
+        chip.innerText = name + " " + cell.location;
+        chip.classList.remove("hide");
+        button.classList.add("hide");
+        input.value = cell.id;
+    }
+    new ShelfSelector("{{ prefix }}", callback);
+</script>
+
+<style>
+    .hide {display: none;}
+</style>

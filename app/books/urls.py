@@ -26,4 +26,5 @@ urlpatterns = [
     path("books/new/isbn/", views.AddByISBNView.as_view(), name="book-create-isbn"),
     path("books/new/url/", views.AddByURLView.as_view(), name="book-create-url"),
     path("books/new/manual/", views.ManualEntryView.as_view(), name="book-create-manual"),
+    path("api/v1/autocomplete/", views.autocomplete),
 ]
