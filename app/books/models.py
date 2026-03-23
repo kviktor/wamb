@@ -56,6 +56,18 @@ class BookShelf(TimeStampedModel):
     def __str__(self):
         return f"{self.name} ({self.bookcase})"
 
+    @property
+    def location(self):
+        column_name = ""
+
+        column = self.column + 1
+        while column > 0:
+            modulo = (column - 1) % 26
+            column_name = chr(ord("A") + modulo) + column_name
+            column = (column - modulo) // 26
+
+        return f"{column_name}{self.row + 1}"
+
 
 class Book(TimeStampedModel):
     shelf = models.ForeignKey(

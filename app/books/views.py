@@ -1,6 +1,4 @@
-from django.apps import apps
-from django.db.models import Count, Prefetch, Q
-from django.http import Http404, JsonResponse
+from django.db.models import Count, Prefetch
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,

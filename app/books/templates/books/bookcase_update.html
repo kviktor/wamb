@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}}Edit Bookcase{% endblock %}
+{% block title %}Edit Bookcase{% endblock %}
 
 {% block content %}
     <article>
@@ -54,7 +54,9 @@
                     <tr>
                         {% for shelf in row.list %}
                             <td rowspan="{{ shelf.config.rowspan }}" colspan="{{ shelf.config.colspan }}">
-                                {{ shelf.book_count }}
+                                {{ shelf.location }}
+                                <br />
+                                <a href="/">{{ shelf.book_count }}</a>
                             </td>
                         {% endfor %}
                     </tr>
@@ -86,10 +88,6 @@
                 border-left:solid black 1px;
                 border-top:solid black 1px;
                 padding: 30px;
-            }
-            & td:hover {
-                cursor: pointer;
-                background-color: var(--on-primary);
             }
         }
     </style>
