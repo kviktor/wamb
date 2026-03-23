@@ -66,7 +66,12 @@ class BookShelf(TimeStampedModel):
             column_name = chr(ord("A") + modulo) + column_name
             column = (column - modulo) // 26
 
-        return f"{column_name}{self.row + 1}"
+        row = self.bookcase.rows - self.row
+        # rowspan is always set to 1
+        if rowspan := self.config.get("rowspan"):
+            row -= rowspan - 1
+
+        return f"{column_name}{row}"
 
 
 class Book(TimeStampedModel):

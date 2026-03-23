@@ -46,7 +46,7 @@ class BookcaseUpdateView(UpdateView):
             "shelves",
             queryset=BookShelf.objects.annotate(
                 book_count=Count("books"),
-            ),
+            ).select_related("bookcase"),
         ),
     )
 

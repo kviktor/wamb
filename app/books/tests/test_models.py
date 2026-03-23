@@ -18,6 +18,6 @@ class BookShelfTest(TestCase):
             (0, 16383, "XFD1"),
         ]
     )
-    def test_location(self, row, column, expected):
-        shelf = models.BookShelf(row=row, column=column)
+    def test_location_letters(self, row, column, expected):
+        shelf = models.BookShelf(row=row, column=column, bookcase=models.Bookcase(rows=1))
         self.assertEqual(shelf.location, expected)
