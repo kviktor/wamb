@@ -51,9 +51,7 @@
                             </div>
                         </div>
                         <div class="s12 m6">
-                            <div class="field label border">
-                                {% include "books/_shelf-selector.html" with prefix="isbn" %}
-                            </div>
+                            {% include "books/_shelf-selector.html" with prefix="isbn" field=isbn_form.shelf %}
                         </div>
                     </div>
 

@@ -1,8 +1,23 @@
-<input type="hidden" name="shelf" id="{{ prefix }}-input"/>
-<div class="chip hide" id="{{ prefix }}-chip"></div>
+<div {% if not field.value %}class="hide"{% endif %}>
+    <div class="field label border">
+        <input type="text" id="{{ prefix }}-display" disabled {% if shelf %}value="{{ shelf.bookcase.name }} {{ shelf.location }}"{% endif %}/>
+        <label>Shelf</label>
+        <output>Which shelf the book should be assigned to.</output>
+    </div>
+    <button class="button" id="{{ prefix }}-another">
+        <i>search</i>
+        <span>Select another</span>
+    </button>
+</div>
 
-<button id="{{ prefix }}-btn">Select shelf</button>
 
+<div {% if field.value %}class="hide"{% endif %}>
+    <div class="field">
+        <button id="{{ prefix }}-btn">Select shelf</button>
+    </div>
+</div>
+
+<input type="hidden" name="shelf" id="{{ prefix }}-value" {% if field.value %}value="{{ field.value }}"{% endif %}/>
 
 <dialog class="top" id="{{ prefix }}-dialog">
     <div class="field label prefix border round">
@@ -10,7 +25,11 @@
         <input type="text" id="{{ prefix }}-bookcase-search">
         <label>Search for bookcase</label>
     </div>
+
+    <div class="space"></div>
+
     <div class="results"></div>
+
     <nav class="right-align">
         <button class="border cancel">Cancel</button>
     </nav>
@@ -18,14 +37,15 @@
 
 <script>
     function callback(name, cell) {
-        const chip = document.getElementById("{{ prefix }}-chip");
-        const button = document.getElementById("{{ prefix }}-btn");
-        const input = document.getElementById("{{ prefix }}-input");
+        const {{ prefix }}Button = document.getElementById("{{ prefix }}-btn");
+        const {{ prefix }}Value = document.getElementById("{{ prefix }}-value");
+        const {{ prefix }}Display = document.getElementById("{{ prefix }}-display");
 
-        chip.innerText = name + " " + cell.location;
-        chip.classList.remove("hide");
-        button.classList.add("hide");
-        input.value = cell.id;
+        {{ prefix }}Button.parentNode.parentNode.classList.add("hide");
+
+        {{ prefix }}Value.value = cell.id;
+        {{ prefix }}Display.value = name + " " + cell.location;
+        {{ prefix }}Display.parentNode.parentNode.classList.remove("hide");
     }
     new ShelfSelector("{{ prefix }}", callback);
 </script>

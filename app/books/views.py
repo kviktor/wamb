@@ -127,6 +127,7 @@ class AddByISBNView(CreateView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         ctx["isbn_form"] = ctx["form"]
+        ctx["shelf"] = ctx["form"].cleaned_data.get("shelf")
         return ctx
 
     def get_success_url(self):

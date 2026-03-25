@@ -2,7 +2,6 @@ class Bookcase {
     constructor(targetContainer, config) {
         this.config = config || [];
         this.targetContainer = targetContainer;
-        this.table = null;
         this.selectedCount = 0;
         this.listeners = {};
     };
@@ -96,6 +95,15 @@ class Bookcase {
         this.draw();
     }
 
+    clearSelections() {
+        for(const row of this.config) {
+            for(const cell of row) {
+                cell.selected = false;
+            }
+        }
+        this.draw();
+    }
+
     draw() {
         const table = document.createElement("table");
         table.classList.add("bookcaseTable");
@@ -119,11 +127,8 @@ class Bookcase {
             }
         }
 
-        if(this.table) { this.table.remove(); }
-
-        this.table = table;
-        this.targetContainer.appendChild(table);
-        this.table.addEventListener("click", (event) => this.onClick(event));
+        this.targetContainer.replaceChildren(table);
+        table.addEventListener("click", (event) => this.onClick(event));
         this.emit("updated");
     };
     onClick(event) {
@@ -132,7 +137,7 @@ class Bookcase {
         cell.selected = !cell.selected;
         this.draw();
         this.selectedCount += cell.selected ? 1 : -1;
-        this.emit("selected", cell);
+        this.emit("selected", {"bookcase": this, "cell": cell});
     }
 };
 
@@ -140,6 +145,7 @@ class Bookcase {
 class ShelfSelector {
     constructor(prefix, callback) {
         this.button = document.getElementById(`${prefix}-btn`);
+        this.another= document.getElementById(`${prefix}-another`);
         this.dialog = document.getElementById(`${prefix}-dialog`);
         this.search = document.getElementById(`${prefix}-bookcase-search`);
         this.results = this.dialog.getElementsByClassName("results")[0];
@@ -149,6 +155,11 @@ class ShelfSelector {
         this.bookcaseName = "";
 
         this.button.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.dialog.showModal();
+        });
+
+        this.another.addEventListener("click", (e) => {
             e.preventDefault();
             this.dialog.showModal();
         });
@@ -179,6 +190,7 @@ class ShelfSelector {
 
         if(data.results.length > 0) {
             const ul = document.createElement("ul");
+            ul.classList.add("list", "border");
             for (const result of data.results) {
                 const li = document.createElement("li");
                 li.appendChild(document.createTextNode(result.name));
@@ -200,12 +212,13 @@ class ShelfSelector {
     onResultClick(event) {
         this.bookcaseName = event.target.innerText;
         const bookcase = new Bookcase(this.results, JSON.parse(event.target.dataset.config));
-        bookcase.addEventListener("selected", (_, cell) => this.onShelfClick(cell));
+        bookcase.addEventListener("selected", (_, payload) => this.onShelfClick(payload));
         bookcase.draw();
     };
 
-    onShelfClick(cell) {
-        this.callback(this.bookcaseName, cell);
+    onShelfClick(payload) {
+        this.callback(this.bookcaseName, payload.cell);
+        payload.bookcase.clearSelections();
         this.dialog.close();
     };
 }
