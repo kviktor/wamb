@@ -1,10 +1,15 @@
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import (
+from app.books.models import (
     Book,
     Bookcase,
     BookShelf,
+)
+from app.books.utils import create_book_object_from_pydantic
+from app.metadata.services import (
+    get_book_by_isbn,
+    get_book_by_url,
 )
 
 
@@ -29,8 +34,6 @@ class AddByISBNForm(forms.ModelForm):
         if Book.objects.filter(isbn=isbn).exists():
             raise ValidationError({"isbn": "A book with this ISBN already exists."})
 
-        from app.metadata.services import get_book_by_isbn
-
         book = get_book_by_isbn(isbn)
         if not book:
             raise ValidationError({"isbn": "No book with that isbn."})
@@ -38,8 +41,6 @@ class AddByISBNForm(forms.ModelForm):
         self.book = book
 
     def save(self):
-        from app.books.utils import create_book_object_from_pydantic
-
         book = create_book_object_from_pydantic(self.book)
         book.shelf = self.cleaned_data["shelf"]
         return book
@@ -62,8 +63,6 @@ class AddByURLForm(forms.Form):
         if not url:
             raise ValidationError({"url": "This field is required."})
 
-        from app.metadata.services import get_book_by_url
-
         book = get_book_by_url(url)
         if not book:
             raise ValidationError({"url": "Could not fetch book data from this URL."})
@@ -71,8 +70,6 @@ class AddByURLForm(forms.Form):
         self.book = book
 
     def save(self):
-        from app.books.utils import create_book_object_from_pydantic
-
         return create_book_object_from_pydantic(self.book)
 
 

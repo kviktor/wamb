@@ -82,51 +82,10 @@ class BookCreateView(TemplateView):
         return ctx
 
 
-class ManualEntryView(CreateView):
-    model = Book
-    form_class = ManualEntryForm
-    template_name = "books/book_form.html#manual-section"
-    success_url = reverse_lazy("book-list")
-
+class CreateBookMixin:
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["manual_form"] = ctx["form"]
-        return ctx
-
-
-class AddByURLView(CreateView):
-    model = Book
-    form_class = AddByURLForm
-    template_name = "books/book_form.html#url-section"
-
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs.pop("instance", None)
-        return kwargs
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["url_form"] = ctx["form"]
-        return ctx
-
-    def get_success_url(self):
-        return f"/books/{self.object.pk}/"
-
-    def form_valid(self, form):
-        self.object = form.save()
-        resp = self.render_to_response(self.get_context_data(form=form))
-        resp["HX-Redirect"] = self.get_success_url()
-        return resp
-
-
-class AddByISBNView(CreateView):
-    model = Book
-    form_class = AddByISBNForm
-    template_name = "books/book_form.html#isbn-section"
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx["isbn_form"] = ctx["form"]
+        ctx[self.context_form_name] = ctx["form"]
         ctx["shelf"] = ctx["form"].cleaned_data.get("shelf")
         return ctx
 
@@ -138,6 +97,34 @@ class AddByISBNView(CreateView):
         resp["HX-Redirect"] = resp["Location"]
         del resp["Location"]
         return resp
+
+
+class AddByISBNView(CreateBookMixin, CreateView):
+    model = Book
+    form_class = AddByISBNForm
+    template_name = "books/book_form.html#isbn-section"
+    context_form_name = "isbn_form"
+
+
+class AddByURLView(CreateBookMixin, CreateView):
+    model = Book
+    form_class = AddByURLForm
+    template_name = "books/book_form.html#url-section"
+    context_form_name = "url_form"
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        # form is not a ModelForm
+        kwargs.pop("instance", None)
+        return kwargs
+
+
+class ManualEntryView(CreateBookMixin, CreateView):
+    model = Book
+    form_class = ManualEntryForm
+    template_name = "books/book_form.html#manual-section"
+    success_url = reverse_lazy("book-list")
+    context_form_name = "manual_form"
 
 
 class BookUpdateView(UpdateView):
