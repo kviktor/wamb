@@ -30,7 +30,7 @@
                     action="{% url 'book-create-isbn' %}"
                     hx-post="{% url 'book-create-isbn' %}"
                     hx-swap="outerHTML"
-                    hx-disabled-elt="find button"
+                    hx-disabled-elt="find #add-btn"
                 >
                     {% csrf_token %} {% if isbn_form.errors %}
                         <div class="error-text padding">
@@ -57,7 +57,7 @@
 
                     <div class="space"></div>
                     <nav>
-                        <button type="submit" class="button">
+                        <button type="submit" class="button" id="add-btn">
                             <i>search</i>
                             <span>Add Book</span>
                         </button>
