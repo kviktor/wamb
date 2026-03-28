@@ -14,4 +14,4 @@ class ISBNLookupAdmin(admin.ModelAdmin):
 
 @admin.register(models.ResponseLog)
 class ResponseLogAdmin(admin.ModelAdmin):
-    list_display = ("service", "url", "status_code", "created_at")
+    list_display = ("service", "url", "method", "status_code", "created_at")

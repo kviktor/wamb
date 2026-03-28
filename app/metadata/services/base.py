@@ -31,6 +31,14 @@ class BookMetadata(BaseModel):
             and self.number_of_pages
         )
 
+    @property
+    def has_enough_info(self) -> bool:
+        return bool(
+            self.isbn,
+            self.title,
+            self.authors,
+        )
+
     def merge(self, book: BookMetadata) -> BookMetadata:
         fields = ("title", "authors", "publication_year", "number_of_pages", "cover_url")
         for field in fields:
@@ -61,12 +69,17 @@ def get_book_by_isbn(isbn: str) -> BookMetadata | None:
 
         if not base_book:
             base_book = book
-        else:
+        elif book:
             base_book = base_book.merge(book)
 
+        # if we have all the required informatin we should stop querying other services
         if base_book and base_book.has_all_info:
             ISBNLookup.objects.create(isbn=isbn, serialized_data=base_book.model_dump())
             return base_book
+
+    # if we have enough info (title, isbn, authors) we should still create a lookup object
+    if base_book and base_book.has_enough_info:
+        ISBNLookup.objects.create(isbn=isbn, serialized_data=base_book.model_dump())
 
     return base_book
 

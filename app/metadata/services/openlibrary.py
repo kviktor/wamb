@@ -12,6 +12,7 @@ class OpenLibraryClient(Client):
     SERVICE = Service.openlibrary
 
     def get_book(self, isbn: str) -> dict | None:
+        # this redirets to /books/OLXXXXX.json
         url = f"{self.BASE_URL}/isbn/{isbn}.json"
         response = self.get(url)
         if not response:
