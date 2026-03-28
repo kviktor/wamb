@@ -162,24 +162,6 @@ class BookDeleteView(DeleteView):
     success_url = reverse_lazy("book-list")
 
 
-class ISBN(TemplateView):
-    template_name = "isbn.html"
-
-    def get_context_data(self, **kwargs):
-        from app.metadata.services.base import get_book_by_isbn
-
-        ctx = super().get_context_data(**kwargs)
-        ctx["book"] = get_book_by_isbn(self.request.GET.get("isbn", ""))
-        self.book = ctx["book"]
-        return ctx
-
-    def get(self, *args, **kwargs):
-        resp = super().get(*args, **kwargs)
-        if not self.book:
-            resp.status_code = 400
-        return resp
-
-
 def autocomplete(request):
     mapping = {
         "bookcase": {
