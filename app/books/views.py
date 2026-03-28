@@ -71,14 +71,26 @@ class BookDetailView(DetailView):
     context_object_name = "book"
 
 
+def get_initial_shelf(request):
+    if shelf_id := request.session.get("last_used_shelf"):
+        return BookShelf.objects.get(pk=shelf_id)
+
+
 class BookCreateView(TemplateView):
     template_name = "books/book_form.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["isbn_form"] = AddByISBNForm()
-        ctx["url_form"] = AddByURLForm()
-        ctx["manual_form"] = ManualEntryForm()
+
+        initial = {}
+        if shelf := get_initial_shelf(self.request):
+            initial["shelf"] = shelf
+            ctx["shelf"] = shelf
+
+        ctx["isbn_form"] = AddByISBNForm(initial=initial)
+        ctx["url_form"] = AddByURLForm(initial=initial)
+        ctx["manual_form"] = ManualEntryForm(initial=initial)
+
         return ctx
 
 
@@ -95,6 +107,10 @@ class CreateBookMixin:
     def form_valid(self, form):
         resp = super().form_valid(form)
         resp["HX-Redirect"] = resp["Location"]
+
+        if shelf := form.cleaned_data.get("shelf"):
+            self.request.session["last_used_shelf"] = shelf.id
+
         del resp["Location"]
         return resp
 
@@ -114,7 +130,7 @@ class AddByURLView(CreateBookMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        # form is not a ModelForm
+        # form_class is not a ModelForm
         kwargs.pop("instance", None)
         return kwargs
 

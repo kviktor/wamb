@@ -25,6 +25,10 @@ class AddByISBNForm(forms.ModelForm):
         if not isbn:
             raise ValidationError({"isbn": "This field is required."})
 
+        # replace/ignore dashes and whitespaces
+        isbn = isbn.replace("-", "").replace(" ", "")
+
+        # for others raise an error
         if not str(isbn).isdigit():
             raise ValidationError({"isbn": "ISBN must only contain numbers."})
 

@@ -99,7 +99,7 @@
                         </div>
                         <div class="s12 m6">
                             <div class="field label border">
-                                {% include "books/_shelf-selector.html" with prefix="url" %}
+                                {% include "books/_shelf-selector.html" with prefix="url" field=url_form.shelf %}
                             </div>
                         </div>
                     </div>
@@ -137,7 +137,7 @@
                     {% endif %}
 
                     <div class="field label border suffix">
-                        {% include "books/_shelf-selector.html" with prefix="manual" %}
+                        {% include "books/_shelf-selector.html" with prefix="manual" field=manual_form.shelf %}
                     </div>
 
                     <div class="field label border">
