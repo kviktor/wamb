@@ -33,11 +33,7 @@ class BookMetadata(BaseModel):
 
     @property
     def has_enough_info(self) -> bool:
-        return bool(
-            self.isbn,
-            self.title,
-            self.authors,
-        )
+        return bool(self.isbn and self.title and self.authors)
 
     def merge(self, book: BookMetadata) -> BookMetadata:
         fields = ("title", "authors", "publication_year", "number_of_pages", "cover_url")

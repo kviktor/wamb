@@ -5,14 +5,14 @@
 {% block content %}
     <article class="no-padding">
         <div class="padding">
-            <h3>Books</h3>
-            <p>Browse all books in your library</p>
-            <nav>
-                <a href="{% url 'book-create' %}" class="button">
+            <h3>
+                <i>book_2</i>
+                Books
+                <a href="{% url 'book-create' %}" class="button right absolute">
                     <i>add</i>
                     <span>Add New Book</span>
                 </a>
-            </nav>
+            </h3>
         </div>
 
         {% if books %}

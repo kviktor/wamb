@@ -6,20 +6,26 @@
 {% block content %}
     <script src="{% static 'js/bookcase.js' %}"></script>
     <article>
-        <h3>{% if object %}Edit Book{% else %}Add New Book{% endif %}</h3>
-
         <div class="tabs">
             <a data-ui="#isbn-tab" class="active">
                 <i>search</i>
-                <span>Add by ISBN</span>
+                <span class="s">ISBN</span>
+                <span class="m l">Add by ISBN</span>
             </a>
             <a data-ui="#url-tab">
                 <i>link</i>
-                <span>Add by URL</span>
+                <span class="s">URL</span>
+                <span class="m l">Add by URL</span>
+            </a>
+            <a data-ui="#scan-tab">
+                <i>barcode</i>
+                <span class="s">Scan</span>
+                <span class="m l">Scan ISBN</span>
             </a>
             <a data-ui="#manual-tab">
                 <i>edit</i>
-                <span>Manual Entry</span>
+                <span class="s">Manual</span>
+                <span class="m l">Manual Entry</span>
             </a>
         </div>
 
@@ -119,6 +125,42 @@
             {% endpartialdef url-section %}
         </div>
 
+        <div class="page" id="scan-tab">
+            {% partialdef scan-section inline %}
+                <div class="space"></div>
+
+                <div class="grid">
+                    <div class="s6 m2 field">
+                        <button id="startScan">
+                            <i>photo_camera</i>
+                            Start
+                        </button>
+                    </div>
+                    <div class="s6 m2 field">
+                        <button id="stopScan">
+                            <i>stop</i>
+                            Stop
+                        </button>
+                    </div>
+                    <div class="s12 m8">
+                        <div class="field border label">
+                            <select id="camera">
+                                <option value="">Select a camera...</option>
+                            </select>
+                            <label>Camera</label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="space"></div>
+
+                <div class="snackbar primary" id="feedback" popover>Some text here</div>
+
+                <div id="interactive" class="viewport">Click Start to start scanning.</div>
+            {% endpartialdef scan-section %}
+        </div>
+
         <div class="page" id="manual-tab">
             {% partialdef manual-section inline %}
                 <form
@@ -210,4 +252,16 @@
             }
         }
     </style>
+
+    <style>
+        #interactive video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+    <script src="{% static "js/scan.js" %}"></script>
 {% endblock %}

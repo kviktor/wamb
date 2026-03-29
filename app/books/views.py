@@ -1,6 +1,7 @@
 from django.db.models import Count, Prefetch
 from django.http import JsonResponse
 from django.urls import reverse_lazy
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import (
     CreateView,
     DeleteView,
@@ -19,7 +20,6 @@ from .forms import (
 from .models import Book, Bookcase, BookShelf
 
 
-# TODO ignore for now
 class IndexView(TemplateView):
     template_name = "index.html"
 
@@ -77,7 +77,7 @@ def get_initial_shelf(request):
 
 
 class BookCreateView(TemplateView):
-    template_name = "books/book_form.html"
+    template_name = "books/book_add.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -190,3 +190,14 @@ def autocomplete(request):
             ]
         }
     )
+
+
+@csrf_exempt
+def add_by_isbn_api_view(request):
+    form = AddByISBNForm(request.POST)
+    if not form.is_valid():
+        return JsonResponse(dict(form.errors), status=400)
+
+    book = form.save()
+
+    return JsonResponse({"success": True, "title": book.title}, status=200)
