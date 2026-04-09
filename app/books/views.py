@@ -118,14 +118,14 @@ class CreateBookMixin:
 class AddByISBNView(CreateBookMixin, CreateView):
     model = Book
     form_class = AddByISBNForm
-    template_name = "books/book_form.html#isbn-section"
+    template_name = "books/book_add.html#isbn-section"
     context_form_name = "isbn_form"
 
 
 class AddByURLView(CreateBookMixin, CreateView):
     model = Book
     form_class = AddByURLForm
-    template_name = "books/book_form.html#url-section"
+    template_name = "books/book_add.html#url-section"
     context_form_name = "url_form"
 
     def get_form_kwargs(self):
@@ -138,14 +138,14 @@ class AddByURLView(CreateBookMixin, CreateView):
 class ManualEntryView(CreateBookMixin, CreateView):
     model = Book
     form_class = ManualEntryForm
-    template_name = "books/book_form.html#manual-section"
+    template_name = "books/book_add.html#manual-section"
     success_url = reverse_lazy("book-list")
     context_form_name = "manual_form"
 
 
 class BookUpdateView(UpdateView):
     model = Book
-    template_name = "books/book_form.html"
+    template_name = "books/book_update.html"
     fields = [
         "shelf",
         "title",
@@ -173,7 +173,7 @@ def autocomplete(request):
             ),
             "filters": ["name__icontains"],
             "fields": ["id", "name", "shelves_config"],
-        }
+        },
     }
 
     q = request.GET.get("q", "")

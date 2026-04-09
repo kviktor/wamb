@@ -41,8 +41,8 @@
                                 <td>{{ book.isbn|default:"-" }}</td>
                                 <td>
                                     {% if book.shelf %}
-                                        <a href="{% url 'bookshelf-detail' book.shelf.pk %}"
-                                        >{{ book.shelf.name }}</a
+                                        <a href="{% url 'bookcase-update' book.shelf.bookcase.pk %}"
+                                        >{{ book.shelf.bookcase.name }} {{ book.shelf.location }}</a
                                             >
                                     {% else %} - {% endif %}
                                 </td>

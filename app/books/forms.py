@@ -47,6 +47,7 @@ class AddByISBNForm(forms.ModelForm):
     def save(self):
         book = create_book_object_from_pydantic(self.book)
         book.shelf = self.cleaned_data["shelf"]
+        book.save()
         return book
 
 
@@ -74,7 +75,10 @@ class AddByURLForm(forms.Form):
         self.book = book
 
     def save(self):
-        return create_book_object_from_pydantic(self.book)
+        book = create_book_object_from_pydantic(self.book)
+        book.shelf = self.cleaned_data["shelf"]
+        book.save()
+        return book
 
 
 class BookcaseCreateForm(forms.ModelForm):
