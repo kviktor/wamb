@@ -5,8 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = "==3.14.*"
 dependencies = [
-    "django>=6.0",
-    "django>=6.*",
+    "django==6.0.6",
     "django-environ>=0.12.0",
     "django-htmx>=1.27.0",
     "beautifulsoup4>=4.14.3",
@@ -47,5 +46,7 @@ omit = ["**/migrations/*", "**/tests/*"]
 
 [dependency-groups]
 dev = [
+    "djade>=1.9.0",
+    "djhtml>=3.0.11",
     "parameterized>=0.9.0",
 ]
