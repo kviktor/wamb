@@ -1,0 +1,1 @@
+{% load static %}{% if book.cover %}{{ book.cover.image.url }}{% else %}{% static "img/placeholder.webp" %}{% endif %}

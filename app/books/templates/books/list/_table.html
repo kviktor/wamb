@@ -1,0 +1,56 @@
+
+<table class="border">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Authors</th>
+            <th>ISBN</th>
+            <th>Shelf</th>
+            <th>Year</th>
+            <th class="center-align">Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for book in books %}
+            <tr>
+                <td>
+                    <a href="{% url 'book-detail' book.pk %}"
+                    >{{ book.title }}</a
+                        >
+                    </td>
+                    <td>
+                        {% for author in book.authors.all %} {{ author.name }}{% if not forloop.last %}, {% endif %} {% empty %} - {% endfor %}
+                    </td>
+                    <td>{{ book.isbn|default:"-" }}</td>
+                    <td>
+                        {% if book.shelf %}
+                            <a href="{% url 'bookcase-update' book.shelf.bookcase.pk %}"
+                            >{{ book.shelf.bookcase.name }} {{ book.shelf.location }}</a
+                                >
+                        {% else %} - {% endif %}
+                    </td>
+                    <td>{{ book.publication_year|default:"-" }}</td>
+                    <td class="center-align">
+                        <a
+                            href="{% url 'book-detail' book.pk %}"
+                            class="button small-round"
+                        >
+                            <i>visibility</i>
+                        </a>
+                        <a
+                            href="{% url 'book-update' book.pk %}"
+                            class="button small-round"
+                        >
+                            <i>edit</i>
+                        </a>
+                        <a
+                            href="{% url 'book-delete' book.pk %}"
+                            class="button small-round"
+                        >
+                            <i>delete</i>
+                        </a>
+                    </td>
+                </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -23,6 +23,14 @@ from .models import Book, Bookcase, BookShelf
 class IndexView(TemplateView):
     template_name = "index.html"
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        ctx["total_number_of_books"] = Book.objects.count()
+        ctx["latest_books"] = Book.objects.order_by("-created_at")[:10]
+
+        return ctx
+
 
 class BookcaseListView(ListView):
     model = Bookcase
@@ -60,9 +68,25 @@ class BookcaseDeleteView(DeleteView):
 
 class BookListView(ListView):
     model = Book
-    template_name = "books/book_list.html"
+    queryset = Book.objects.order_by("-created_at")
+    template_name = "books/list/index.html"
     context_object_name = "books"
     paginate_by = 20
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+
+        ctx["view_modes"] = (
+            ("cover", "photo"),
+            ("table", "table"),
+        )
+
+        ctx["view_mode"] = {
+            "table": "table"
+        }.get(self.request.GET.get("view"), "cover")
+
+        return ctx
+
 
 
 class BookDetailView(DetailView):
