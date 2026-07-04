@@ -34,6 +34,10 @@ class IndexView(TemplateView):
 
 class BookcaseListView(ListView):
     model = Bookcase
+    queryset = Bookcase.objects.annotate(
+        num_shelves=Count("shelves"),
+        num_books=Count("shelves__books"),
+    )
     template_name = "books/bookcase_list.html"
     context_object_name = "bookcases"
 
@@ -81,12 +85,9 @@ class BookListView(ListView):
             ("table", "table"),
         )
 
-        ctx["view_mode"] = {
-            "table": "table"
-        }.get(self.request.GET.get("view"), "cover")
+        ctx["view_mode"] = {"table": "table"}.get(self.request.GET.get("view"), "cover")
 
         return ctx
-
 
 
 class BookDetailView(DetailView):

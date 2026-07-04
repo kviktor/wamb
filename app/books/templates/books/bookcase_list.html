@@ -18,7 +18,7 @@
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Description</th>
+                        <th class="center-align">Books</th>
                         <th class="center-align">Shelves</th>
                         <th>Created</th>
                         <th class="center-align">Actions</th>
@@ -32,8 +32,8 @@
                                 >{{ bookcase.name }}</a
                                     >
                                 </td>
-                                <td>{{ bookcase.description|truncatewords:10 }}</td>
-                                <td class="center-align">{{ bookcase.shelves.count }}</td>
+                                <td class="center-align">{{ bookcase.num_books }}</td>
+                                <td class="center-align">{{ bookcase.num_shelves }}</td>
                                 <td>{{ bookcase.created_at|date:"Y-m-d" }}</td>
                                 <td class="center-align">
                                     <a
