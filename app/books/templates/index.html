@@ -11,16 +11,16 @@
             <p>
                 Latest books:
                 <ul>
-                {% for book in latest_books %}
-                    <li>
-                        <a href="{% url "book-detail" pk=book.pk %}">
-                            {{ book }}
-                        </a>
-                    </li>
-                {% endfor %}
+                    {% for book in latest_books %}
+                        <li>
+                            <a href="{% url "book-detail" pk=book.pk %}">
+                                {{ book }}
+                            </a>
+                        </li>
+                    {% endfor %}
                 </ul>
             </p>
 
         </div>
-        </article>
+    </article>
 {% endblock content %}

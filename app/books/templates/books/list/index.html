@@ -16,7 +16,7 @@
         </div>
 
         {% for name, icon in view_modes %}
-        <a class="button small small-round" href="?view={{ name }}" {% if name == view_mode %}disabled{% endif %}>
+            <a class="button small small-round" href="?view={{ name }}" {% if name == view_mode %}disabled{% endif %}>
                 <i>{{ icon }}</i>
                 {{ name|title }}
             </a>
