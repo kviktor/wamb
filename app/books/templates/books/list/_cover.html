@@ -2,11 +2,11 @@
     {% for book in books %}
         <div class="s6 m4 l3">
             <a href="{% url "book-detail" pk=book.pk %}">
-                <article class="no-padding border">
+                <article class="no-padding border cover-card">
                     <img class="responsive medium" src="{% include "books/_cover-src.html" with book=book %}">
                     {% if not book.cover %}
-                        <div class="row absolute bottom left right padding bottom-shadow white-text">
-                            <h5> {{ book.title }}</h5>
+                        <div class="row absolute bottom left right padding bottom-shadow white-text cover-title">
+                            <h5>{{ book.title }}</h5>
                         </div>
                     {% endif %}
                 </article>
@@ -18,5 +18,19 @@
 <style>
     article img {
         min-height: 420px;
+    }
+
+    .cover-title h5 {
+        flex: 1 1 100%;
+        min-width: 0;
+        margin: 0;
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .cover-card:hover .cover-title h5 {
+        -webkit-line-clamp: unset;
     }
 </style>
