@@ -56,9 +56,21 @@ def create_book_object_from_pydantic(book: BookMetadata) -> Book:
     authors = []
 
     for author in book.authors:
-        obj, _ = Author.objects.get_or_create(
-            name=author.name, third_party_data=author.third_party_data
+        obj, created = Author.objects.get_or_create(
+            name=author.name,
+            defaults={
+                "third_party_data": author.third_party_data,
+            },
         )
+
+        # we might have extra third_party data
+        if not created and obj.third_party_data != author.third_party_data:
+            obj.third_party_data = {
+                **obj.third_party_data,
+                **author.third_party_data,
+            }
+            obj.save(update_fields=["third_party_data"])
+
         authors.append(obj)
 
     db_book.authors.set(authors)

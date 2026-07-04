@@ -48,5 +48,6 @@ omit = ["**/migrations/*", "**/tests/*"]
 dev = [
     "djade>=1.9.0",
     "djhtml>=3.0.11",
+    "model-bakery>=1.24.0",
     "parameterized>=0.9.0",
 ]
