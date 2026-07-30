@@ -12,7 +12,7 @@ URL_PATTERN = re.compile(r"https?://(www\.)?moly\.hu/kiadasok/\d+")
 
 
 class MolyClient(Client):
-    BASE_URL = "https://openlibrary.org"
+    BASE_URL = "https://moly.hu"
     SERVICE = Service.moly
 
     def get_headers(self):
@@ -90,14 +90,16 @@ class MolyClient(Client):
         except TypeError, ValueError:
             return None
 
-    def _get_edition_data(self, edition_url) -> dict:
+    def _get_edition_data(self, edition_url: str, edition_response: str = "") -> dict:
         data = {
             "publication_year": None,
             "number_of_pages": None,
             "cover_url": None,
         }
 
-        edition_response = self.get(edition_url)
+        if not edition_response:
+            edition_response = self.get(edition_url)
+
         edition_soup = BeautifulSoup(edition_response.content, "html.parser")
 
         # get the cover image
@@ -151,7 +153,45 @@ class MolyClient(Client):
                     isbn = li.find("strong").text
                     return self.get_book_by_isbn(isbn)
 
-        return None
+        # edition has no ISBN, extract rest of the information
+
+        # find the main book url to get title + authors
+        book_url = edition_soup.find_all(
+            "a", href=re.compile(r"^/konyvek/[0-9a-zA-Z_\.-]+")
+        )[0].attrs["href"]
+
+        # TODO fix this duplication
+        book_response = self.get(f"https://moly.hu{book_url}")
+        book_soup = BeautifulSoup(book_response.content, "html.parser")
+
+        div_content = book_soup.find("div", id="content")
+        head = div_content.find_all("div", class_="head")[0]
+        div_authors = head.find_all("div", class_="authors")[0]
+        authors = []
+        for author in div_authors.find_all("a"):
+            href = author["href"]
+            name = author.text
+            authors.append(
+                {
+                    "link": f"https://moly.hu{href}",
+                    "name": name,
+                    "slug": href.replace("/alkotok/", ""),
+                },
+            )
+
+        title = div_content.find("h1").find_all("span", class_="item")[0].text
+
+        data = {
+            "isbn": "",
+            "authors": authors,
+            "title": title,
+            "edition_id": url.replace("https://moly.hu/kiadasok/", ""),
+            "book_slug": book_url.removeprefix("/konyvek"),
+            # get edition data from the same content so we only have 2x queries
+            **self._get_edition_data(None, response),
+        }
+
+        return data
 
 
 def _get_book(data: dict) -> BookMetadata:
