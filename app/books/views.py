@@ -17,7 +17,12 @@ from .forms import (
     BookcaseCreateForm,
     ManualEntryForm,
 )
-from .models import Book, Bookcase, BookShelf
+from .models import (
+    Author,
+    Book,
+    Bookcase,
+    BookShelf,
+)
 
 
 class IndexView(TemplateView):
@@ -30,6 +35,17 @@ class IndexView(TemplateView):
         ctx["latest_books"] = Book.objects.order_by("-created_at")[:10]
 
         return ctx
+
+
+class AuthorListView(ListView):
+    model = Author
+    template_name = "books/author_list.html"
+    context_object_name = "authors"
+
+
+class AuthorDetailView(DetailView):
+    model = Author
+    template_name = "books/author_detail.html"
 
 
 class BookcaseListView(ListView):
