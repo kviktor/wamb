@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Prefetch
 from django.http import JsonResponse
 from django.urls import reverse_lazy
@@ -23,6 +25,7 @@ from .models import (
     Bookcase,
     BookShelf,
 )
+from .permissions import PermissionMixin
 
 
 class IndexView(TemplateView):
@@ -37,18 +40,18 @@ class IndexView(TemplateView):
         return ctx
 
 
-class AuthorListView(ListView):
+class AuthorListView(PermissionMixin, ListView):
     model = Author
     template_name = "books/author/list.html"
     context_object_name = "authors"
 
 
-class AuthorDetailView(DetailView):
+class AuthorDetailView(PermissionMixin, DetailView):
     model = Author
     template_name = "books/author/detail.html"
 
 
-class BookcaseListView(ListView):
+class BookcaseListView(PermissionMixin, ListView):
     model = Bookcase
     queryset = Bookcase.objects.annotate(
         num_shelves=Count("shelves"),
@@ -58,14 +61,14 @@ class BookcaseListView(ListView):
     context_object_name = "bookcases"
 
 
-class BookcaseCreateView(CreateView):
+class BookcaseCreateView(PermissionMixin, CreateView):
     model = Bookcase
     template_name = "books/bookcase/create.html"
     form_class = BookcaseCreateForm
     success_url = reverse_lazy("bookcase-list")
 
 
-class BookcaseUpdateView(UpdateView):
+class BookcaseUpdateView(PermissionMixin, UpdateView):
     model = Bookcase
     template_name = "books/bookcase/update.html"
     fields = ["name", "description"]
@@ -80,13 +83,13 @@ class BookcaseUpdateView(UpdateView):
     )
 
 
-class BookcaseDeleteView(DeleteView):
+class BookcaseDeleteView(PermissionMixin, DeleteView):
     model = Bookcase
     template_name = "books/bookcase/confirm_delete.html"
     success_url = reverse_lazy("bookcase-list")
 
 
-class BookListView(ListView):
+class BookListView(PermissionMixin, ListView):
     model = Book
     queryset = Book.objects.order_by("-created_at")
     template_name = "books/book/list/index.html"
@@ -106,7 +109,7 @@ class BookListView(ListView):
         return ctx
 
 
-class BookDetailView(DetailView):
+class BookDetailView(PermissionMixin, DetailView):
     model = Book
     template_name = "books/book/detail.html"
     context_object_name = "book"
@@ -117,7 +120,7 @@ def get_initial_shelf(request):
         return BookShelf.objects.get(pk=shelf_id)
 
 
-class BookCreateView(TemplateView):
+class BookCreateView(PermissionMixin, TemplateView):
     template_name = "books/book/create.html"
 
     def get_context_data(self, **kwargs):
@@ -156,14 +159,14 @@ class CreateBookMixin:
         return resp
 
 
-class AddByISBNView(CreateBookMixin, CreateView):
+class AddByISBNView(CreateBookMixin, PermissionMixin, CreateView):
     model = Book
     form_class = AddByISBNForm
     template_name = "books/book/create.html#isbn-section"
     context_form_name = "isbn_form"
 
 
-class AddByURLView(CreateBookMixin, CreateView):
+class AddByURLView(CreateBookMixin, PermissionMixin, CreateView):
     model = Book
     form_class = AddByURLForm
     template_name = "books/book/create.html#url-section"
@@ -176,7 +179,7 @@ class AddByURLView(CreateBookMixin, CreateView):
         return kwargs
 
 
-class ManualEntryView(CreateBookMixin, CreateView):
+class ManualEntryView(CreateBookMixin, PermissionMixin, CreateView):
     model = Book
     form_class = ManualEntryForm
     template_name = "books/book/create.html#manual-section"
@@ -184,7 +187,7 @@ class ManualEntryView(CreateBookMixin, CreateView):
     context_form_name = "manual_form"
 
 
-class BookUpdateView(UpdateView):
+class BookUpdateView(PermissionMixin, UpdateView):
     model = Book
     template_name = "books/book/update.html"
     fields = [
@@ -197,13 +200,17 @@ class BookUpdateView(UpdateView):
     success_url = reverse_lazy("book-list")
 
 
-class BookDeleteView(DeleteView):
+class BookDeleteView(PermissionMixin, DeleteView):
     model = Book
     template_name = "books/book/confirm_delete.html"
     success_url = reverse_lazy("book-list")
 
 
 def autocomplete(request):
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+
+    # TOOD permission check based on selected mapping
     mapping = {
         "bookcase": {
             "queryset": Bookcase.objects.prefetch_related(
@@ -234,7 +241,11 @@ def autocomplete(request):
 
 
 @csrf_exempt
+@permission_required("books.add_book")
 def add_by_isbn_api_view(request):
+    if not request.user.is_authenticated:
+        raise PermissionDenied
+
     form = AddByISBNForm(request.POST)
     if not form.is_valid():
         return JsonResponse(dict(form.errors), status=400)
