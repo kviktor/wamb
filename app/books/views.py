@@ -122,6 +122,7 @@ def get_initial_shelf(request):
 
 class BookCreateView(PermissionMixin, TemplateView):
     template_name = "books/book/create.html"
+    model = Book  # required only for permission check
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
