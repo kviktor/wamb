@@ -40,6 +40,7 @@ from-first = true
 
 [tool.ruff.lint.per-file-ignores]
 "**/migrations/*" = ["E501"]
+"wikidata.py" = ["S324"]
 
 [tool.coverage.report]
 omit = ["**/migrations/*", "**/tests/*"]

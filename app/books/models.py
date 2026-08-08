@@ -25,6 +25,8 @@ class Image(TimeStampedModel):
 class Author(TimeStampedModel):
     name = models.CharField(max_length=200)
     birth_date = models.DateField(blank=True, null=True)
+    gender = models.CharField(max_length=32, blank=True, default="")
+    country = models.CharField(max_length=2, blank=True, default="")
     image = models.ForeignKey(Image, null=True, blank=True, on_delete=models.SET_NULL)
 
     third_party_data = models.JSONField(default=dict)

@@ -8,6 +8,8 @@ from app.metadata.models import ISBNLookup
 
 class AuthorMetadata(BaseModel):
     name: str
+    gender: str
+    country: str
     birth_date: date | None
     third_party_data: dict
 

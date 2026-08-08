@@ -15,3 +15,8 @@ class ISBNLookupAdmin(admin.ModelAdmin):
 @admin.register(models.ResponseLog)
 class ResponseLogAdmin(admin.ModelAdmin):
     list_display = ("service", "url", "method", "status_code", "created_at")
+
+
+@admin.register(models.WikidataCache)
+class WikidataCacheAdmin(admin.ModelAdmin):
+    list_display = ("qid", "claim", "value")

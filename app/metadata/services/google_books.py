@@ -61,6 +61,8 @@ def get_book_by_isbn(isbn: str) -> BookMetadata | None:
             AuthorMetadata(
                 name=author,
                 birth_date=None,
+                gender="",
+                country="",
                 third_party_data={},
             )
             for author in volume_info["authors"]

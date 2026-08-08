@@ -63,6 +63,11 @@ def create_book_object_from_pydantic(book: BookMetadata) -> Book:
             },
         )
 
+        if created:
+            from app.metadata.services.wikidata import update_author
+
+            update_author(obj)
+
         # we might have extra third_party data
         if not created and obj.third_party_data != author.third_party_data:
             obj.third_party_data = {

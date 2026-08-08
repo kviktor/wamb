@@ -15,6 +15,7 @@ class Service(models.IntegerChoices):
     moly = 2
     google_books = 3
     image = 4
+    wikidata = 5
 
 
 class ResponseLog(models.Model):
@@ -29,3 +30,17 @@ class ResponseLog(models.Model):
 
     def __str__(self):
         return self.url
+
+
+class WikidataCache(models.Model):
+    qid = models.CharField(max_length=64)
+    claim = models.CharField(max_length=64)
+    value = models.CharField(max_length=255)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=["qid", "claim"], name="unique_qid_claim"),
+        ]
+
+    def __str__(self):
+        return f"{self.id}: {self.value}"

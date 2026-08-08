@@ -66,10 +66,10 @@ def get_book_by_isbn(isbn: str) -> BookMetadata | None:
             AuthorMetadata(
                 name=author_data["name"],
                 birth_date=parse_year(author_data.get("birth_date")),
+                gender="",
+                country="",
                 third_party_data={
-                    "openlibrary": {
-                        "olid": get_olid(author_data["key"]),
-                    },
+                    "olid": get_olid(author_data["key"]),
                 },
             )
             for author in data["authors"]

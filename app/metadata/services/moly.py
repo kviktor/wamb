@@ -201,11 +201,11 @@ def _get_book(data: dict) -> BookMetadata:
         authors=[
             AuthorMetadata(
                 name=author_data["name"],
+                gender="",
+                country="",
                 birth_date=None,
                 third_party_data={
-                    "moly": {
-                        "slug": author_data["slug"],
-                    },
+                    "moly_slug": author_data["slug"],
                 },
             )
             for author_data in data["authors"]
