@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Books{% endblock %}
+
+{% block content %}
+    <article class="padding">
+        <div class="no-padding">
+            <h3>
+                <i>person_search</i>
+                Authors
+                <a href="{% url 'book-create' %}" class="button right absolute">
+                    <i>add</i>
+                    <span>Add New Author</span>
+                </a>
+            </h3>
+        </div>
+
+        {% for name, icon in view_modes %}
+            <a class="button small small-round" href="{% querystring request.GET view=name %}" {% if name == view_mode %}disabled{% endif %}>
+                <i>{{ icon }}</i>
+                {{ name|title }}
+            </a>
+        {% endfor %}
+
+        {% if authors %}
+            <div class="grid">
+                {% for author in authors %}
+                    <div class="s6 m4 l3">
+                        <a href="{% url "author-detail" pk=author.pk %}">
+                            <article class="no-padding border cover-card">
+                                <img class="responsive medium" src="{% include "books/_cover-src.html" with book=book %}">
+                                <div class="row absolute bottom left right padding bottom-shadow white-text cover-title">
+                                    <h5>{{ author.name }}</h5>
+                                </div>
+                            </article>
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <style>
+                article img {
+                    min-height: 420px;
+                }
+
+                .cover-title h5 {
+                    flex: 1 1 100%;
+                    min-width: 0;
+                    margin: 0;
+                    display: -webkit-box;
+                    -webkit-line-clamp: 1;
+                    -webkit-box-orient: vertical;
+                    overflow: hidden;
+                }
+
+                .cover-card:hover .cover-title h5 {
+                    -webkit-line-clamp: unset;
+                }
+            </style>
+
+            {% if is_paginated %}
+                {% include "books/_pagination.html" %}
+            {% endif %}
+        {% else %}
+            <div class="padding">
+                <p>
+                    No books found.
+                    <a href="{% url 'book-create' %}">Create one now</a>.
+                </p>
+            </div>
+        {% endif %}
+    </article>
+{% endblock content %}

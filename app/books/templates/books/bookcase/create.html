@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}New Bookcase{% endblock %}
+
+{% block content %}
+    <article>
+        <h3>
+            Create New Bookcase
+        </h3>
+
+        <form method="post">
+            {% csrf_token %} {% if form.errors %}
+                <div class="error-text padding">
+                    <i>error</i>
+                    <span>Please correct the errors below</span>
+                </div>
+            {% endif %}
+
+            <div class="field label border">
+                {{ form.name }}
+                <label>Name</label>
+                {% if form.name.errors %}
+                    <span class="error">{{ form.name.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="field textarea label border">
+                {{ form.description }}
+                <label>Description</label>
+                {% if form.description.errors %}
+                    <span class="error">{{ form.description.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="space"></div>
+
+            <div class="row">
+                <div class="field border label max">
+                    <input name="rows" type="number" value="2"/>
+                    <label>Rows</label>
+                </div>
+                <div class="field border label max">
+                    <input name="columns" type="number" value="2"/>
+                    <label>Columns</label>
+                </div>
+                <button class="large" id="mergeTableCellsButton" disabled>Merge selected</button>
+            </div>
+
+            <div class="space"></div>
+
+            <div id="bookcaseTableContainer"></div>
+
+            <div class="space"></div>
+
+            <input type="hidden" name="config" id="configInput"/>
+
+            <nav>
+                <button type="submit" class="button">
+                    <i>save</i>
+                    <span>Save</span>
+                </button>
+                <a href="{% url 'bookcase-list' %}" class="button border">
+                    <i>cancel</i>
+                    <span>Cancel</span>
+                </a>
+            </nav>
+        </form>
+    </article>
+
+
+    <script src="{% static "js/bookcase.js" %}"></script>
+    <script>
+        const rows = document.getElementsByName("rows")[0];
+        const columns = document.getElementsByName("columns")[0];
+
+        const targetContainer = document.getElementById("bookcaseTableContainer")
+        const mergeButton = document.getElementById("mergeTableCellsButton");
+        const configInput = document.getElementById("configInput");
+        const bookcase = new Bookcase(targetContainer, mergeButton, configInput);
+
+        function updateTable() {
+            if(rows && columns && rows.value > 0 && columns.value > 0) {
+                bookcase.updateRowsCols(rows.value, columns.value);
+            }
+        }
+        updateTable();
+
+        rows.addEventListener("input", updateTable);
+        columns.addEventListener("input", updateTable);
+
+        bookcase.addEventListener("updated", (e) => {
+            configInput.value = JSON.stringify(e.config);
+        });
+
+        bookcase.addEventListener("selected", (e) => {
+            mergeButton.disabled = e.selectedCount < 2;
+        });
+
+
+        mergeButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            bookcase.mergeSelected();
+        });
+    </script>
+    <style>
+        .bookcaseTable {
+            border-collapse: separate;
+            border: solid black 1px;
+            border-radius: 6px;
+
+            & td, & th {
+                border-left:solid black 1px;
+                border-top:solid black 1px;
+                padding-top: 40px;
+            }
+            & td:hover {
+                cursor: pointer;
+                background-color: var(--on-primary);
+            }
+            & td[data-selected] {
+                background-color: var(--primary);
+            }
+        }
+    </style>
+{% endblock content %}

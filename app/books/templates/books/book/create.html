@@ -1,0 +1,268 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}New Book{% endblock %}
+
+{% block content %}
+    <script src="{% static 'js/bookcase.js' %}"></script>
+    <article>
+        <div class="tabs">
+            <a data-ui="#isbn-tab" class="active">
+                <i>search</i>
+                <span class="s">ISBN</span>
+                <span class="m l">Add by ISBN</span>
+            </a>
+            <a data-ui="#url-tab">
+                <i>link</i>
+                <span class="s">URL</span>
+                <span class="m l">Add by URL</span>
+            </a>
+            <a data-ui="#scan-tab">
+                <i>barcode</i>
+                <span class="s">Scan</span>
+                <span class="m l">Scan ISBN</span>
+            </a>
+            <a data-ui="#manual-tab">
+                <i>edit</i>
+                <span class="s">Manual</span>
+                <span class="m l">Manual Entry</span>
+            </a>
+        </div>
+
+        <div class="page active" id="isbn-tab">
+            {% partialdef isbn-section inline %}
+                <form
+                    method="post"
+                    action="{% url 'book-create-isbn' %}"
+                    hx-post="{% url 'book-create-isbn' %}"
+                    hx-swap="outerHTML"
+                    hx-disabled-elt="find #add-btn"
+                >
+                    {% csrf_token %} {% if isbn_form.errors %}
+                        <div class="error-text padding">
+                            <i>error</i>
+                            <span>Please correct the errors below</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="grid">
+                        <div class="s12 m6">
+                            <div class="field label border {% if isbn_form.isbn.errors %}invalid{% endif %}">
+                                {{ isbn_form.isbn }}
+                                <label>ISBN</label>
+                                <output>Enter the ISBN to fetch book information automatically</output>
+                                {% if isbn_form.isbn.errors %}
+                                    <output class="invalid">{{ isbn_form.isbn.errors.0 }}</output>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="s12 m6">
+                            {% include "books/_shelf-selector.html" with prefix="isbn" field=isbn_form.shelf %}
+                        </div>
+                    </div>
+
+                    <div class="space"></div>
+                    <nav>
+                        <button type="submit" class="button" id="add-btn">
+                            <i>search</i>
+                            <span>Add Book</span>
+                        </button>
+                        <a href="{% url 'book-list' %}" class="button border">
+                            <i>cancel</i>
+                            <span>Cancel</span>
+                        </a>
+                    </nav>
+                </form>
+            {% endpartialdef isbn-section %}
+        </div>
+
+        <div class="page" id="url-tab">
+            {% partialdef url-section inline %}
+                <form
+                    method="post"
+                    action="{% url 'book-create-url' %}"
+                    hx-post="{% url 'book-create-url' %}"
+                    hx-swap="outerHTML"
+                    hx-disabled-elt="find button"
+                >
+                    {% csrf_token %} {% if url_form.errors %}
+                        <div class="error-text padding">
+                            <i>error</i>
+                            <span>Please correct the errors below</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="grid">
+                        <div class="s12 m6">
+                            <div class="field label border {% if url_form.url.errors %}invalid{% endif %}">
+                                {{ url_form.url }}
+                                <label>URL</label>
+                                <output>Enter a book URL (e.g. moly.hu) to fetch book information automatically</output>
+                                {% if url_form.url.errors %}
+                                    <output class="invalid">{{ url_form.url.errors.0 }}</output>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="s12 m6">
+                            <div class="field label border">
+                                {% include "books/_shelf-selector.html" with prefix="url" field=url_form.shelf %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space"></div>
+                    <nav>
+                        <button type="submit" class="button">
+                            <i>add</i>
+                            <span>Add Book</span>
+                        </button>
+                        <a href="{% url 'book-list' %}" class="button border">
+                            <i>cancel</i>
+                            <span>Cancel</span>
+                        </a>
+                    </nav>
+                </form>
+            {% endpartialdef url-section %}
+        </div>
+
+        <div class="page" id="scan-tab">
+            {% partialdef scan-section inline %}
+                <div class="space"></div>
+
+                <div class="grid">
+                    <div class="s6 m2 field">
+                        <button id="startScan">
+                            <i>photo_camera</i>
+                            Start
+                        </button>
+                    </div>
+                    <div class="s6 m2 field">
+                        <button id="stopScan">
+                            <i>stop</i>
+                            Stop
+                        </button>
+                    </div>
+                    <div class="s12 m8">
+                        <div class="field border label">
+                            <select id="camera">
+                                <option value="">Select a camera...</option>
+                            </select>
+                            <label>Camera</label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="space"></div>
+
+                <div class="snackbar primary" id="feedback" popover>Some text here</div>
+
+                <div id="interactive" class="viewport">Click Start to start scanning.</div>
+            {% endpartialdef scan-section %}
+        </div>
+
+        <div class="page" id="manual-tab">
+            {% partialdef manual-section inline %}
+                <form
+                    method="post"
+                    action="{% url 'book-create-manual' %}"
+                    hx-post="{% url 'book-create-manual' %}"
+                    hx-swap="outerHTML"
+                    hx-disabled-elt="find button"
+                >
+                    {% csrf_token %}
+                    {% if manual_form.errors %}
+                        <div class="error-text padding">
+                            <i>error</i>
+                            <span>Please correct the errors below</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="field label border suffix">
+                        {% include "books/_shelf-selector.html" with prefix="manual" field=manual_form.shelf %}
+                    </div>
+
+                    <div class="field label border">
+                        {{ manual_form.title }}
+                        <label>Title</label>
+                        {% if manual_form.title.errors %}
+                            <span class="error">{{ manual_form.title.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border suffix">
+                        {{ manual_form.authors }}
+                        <label>Authors</label>
+                        <i>arrow_drop_down</i>
+                        {% if manual_form.authors.errors %}
+                            <span class="error">{{ manual_form.authors.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border">
+                        {{ manual_form.isbn }}
+                        <label>ISBN</label>
+                        {% if manual_form.isbn.errors %}
+                            <span class="error">{{ manual_form.isbn.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border">
+                        {{ manual_form.publication_year }}
+                        <label>Publication Year</label>
+                        {% if manual_form.publication_year.errors %}
+                            <span class="error">{{ manual_form.publication_year.errors.0 }}</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="space"></div>
+
+                    <nav>
+                        <button type="submit" class="button">
+                            <i>save</i>
+                            <span>Save</span>
+                        </button>
+                        <a href="{% url 'book-list' %}" class="button border">
+                            <i>cancel</i>
+                            <span>Cancel</span>
+                        </a>
+                    </nav>
+                </form>
+            {% endpartialdef manual-section %}
+        </div>
+    </article>
+
+    <style>
+        .bookcaseTable {
+            border-collapse: separate;
+            border: solid black 1px;
+            border-radius: 6px;
+            text-align: center;
+
+            & td, & th {
+                border-left:solid black 1px;
+                border-top:solid black 1px;
+                padding: 20px 0 20px 0;
+            }
+            & td:hover {
+                cursor: pointer;
+                background-color: var(--on-primary);
+            }
+            & td[data-selected] {
+                background-color: var(--primary);
+            }
+        }
+    </style>
+
+    <style>
+        #interactive video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
+    <script src="{% static "js/scan.js" %}"></script>
+{% endblock content %}

@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Bookcase{% endblock %}
+
+{% block content %}
+    <article>
+        <h3>
+            Edit Bookcase
+        </h3>
+
+        <form method="post">
+            {% csrf_token %} {% if form.errors %}
+                <div class="error-text padding">
+                    <i>error</i>
+                    <span>Please correct the errors below</span>
+                </div>
+            {% endif %}
+
+            <div class="field label border">
+                {{ form.name }}
+                <label>Name</label>
+                {% if form.name.errors %}
+                    <span class="error">{{ form.name.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="field textarea label border">
+                {{ form.description }}
+                <label>Description</label>
+                {% if form.description.errors %}
+                    <span class="error">{{ form.description.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="space"></div>
+
+            <div class="row">
+                <div class="field border label max">
+                    <input name="rows" type="number" value="{{ bookcase.rows }}" disabled/>
+                    <label>Rows</label>
+                </div>
+                <div class="field border label max">
+                    <input name="columns" type="number" value="{{ bookcase.columns }}" disabled/>
+                    <label>Columns</label>
+                </div>
+            </div>
+
+            <div class="space"></div>
+
+            {% regroup bookcase.shelves.all by row as shelves %}
+
+            <table border="1">
+                {% for row in shelves %}
+                    <tr>
+                        {% for shelf in row.list %}
+                            <td rowspan="{{ shelf.config.rowspan }}" colspan="{{ shelf.config.colspan }}">
+                                {{ shelf.location }}
+                                <br />
+                                <a href="/">{{ shelf.book_count }}</a>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </table>
+
+
+            <nav>
+                <button type="submit" class="button">
+                    <i>save</i>
+                    <span>Save</span>
+                </button>
+                <a href="{% url 'bookcase-list' %}" class="button border">
+                    <i>cancel</i>
+                    <span>Cancel</span>
+                </a>
+            </nav>
+        </form>
+    </article>
+
+    <style>
+        table {
+            text-align: center;
+            border-collapse: separate;
+            border: solid black 1px;
+            border-radius: 6px;
+
+            & td, & th {
+                border-left:solid black 1px;
+                border-top:solid black 1px;
+                padding: 30px;
+            }
+        }
+    </style>
+{% endblock content %}

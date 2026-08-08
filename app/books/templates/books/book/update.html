@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Edit Book{% endblock %}
+
+{% block content %}
+    <script src="{% static 'js/bookcase.js' %}"></script>
+    <article>
+        <h5>Edit Book</h5>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="error-text padding">
+                    <i>error</i>
+                    <span>Please correct the errors below</span>
+                </div>
+            {% endif %}
+
+            {% include "books/_shelf-selector.html" with prefix="edit" field=form.shelf shelf=object.shelf %}
+
+            <div class="field label border">
+                {{ form.title }}
+                <label>Title</label>
+                {% if form.title.errors %}
+                    <span class="error">{{ form.title.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="field label border suffix">
+                {{ form.authors }}
+                <label>Authors</label>
+                <i>arrow_drop_down</i>
+                {% if form.authors.errors %}
+                    <span class="error">{{ form.authors.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="field label border">
+                {{ form.isbn }}
+                <label>ISBN</label>
+                {% if form.isbn.errors %}
+                    <span class="error">{{ form.isbn.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="field label border">
+                {{ form.publication_year }}
+                <label>Publication Year</label>
+                {% if form.publication_year.errors %}
+                    <span class="error">{{ form.publication_year.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <div class="space"></div>
+
+            <nav>
+                <button type="submit" class="button">
+                    <i>save</i>
+                    <span>Save</span>
+                </button>
+                <a href="{% url 'book-detail' object.pk %}" class="button border">
+                    <i>cancel</i>
+                    <span>Cancel</span>
+                </a>
+            </nav>
+        </form>
+    </article>
+{% endblock content %}

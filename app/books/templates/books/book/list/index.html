@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Books{% endblock %}
+
+{% block content %}
+    <article class="padding">
+        <div class="no-padding">
+            <h3>
+                <i>book_2</i>
+                Books
+
+                {% for name, icon in view_modes %}
+                    <a class="button small small-round" href="{% querystring request.GET view=name %}" {% if name == view_mode %}disabled{% endif %}>
+                        <i>{{ icon }}</i>
+                        {{ name|title }}
+                    </a>
+                {% endfor %}
+
+                <a href="{% url 'book-create' %}" class="button right absolute">
+                    <i>add</i>
+                    <span>Add New Book</span>
+                </a>
+            </h3>
+        </div>
+
+
+        {% if books %}
+            {% include "books/book/list/_"|add:view_mode|add:".html" %}
+
+            {% if is_paginated %}
+                {% include "books/_pagination.html" %}
+            {% endif %}
+        {% else %}
+            <div class="padding">
+                <p>
+                    No books found.
+                    <a href="{% url 'book-create' %}">Create one now</a>.
+                </p>
+            </div>
+        {% endif %}
+    </article>
+{% endblock content %}

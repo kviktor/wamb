@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ book.title }}{% endblock %}
+
+{% block content %}
+    <article>
+        <nav>
+            <a href="{% url 'book-list' %}" class="button border">
+                <i>arrow_back</i>
+                <span>Back to List</span>
+            </a>
+            <div class="max"></div>
+            <a href="{% url 'book-update' book.pk %}" class="button">
+                <i>edit</i>
+                <span>Edit</span>
+            </a>
+            <a href="{% url 'book-delete' book.pk %}" class="button">
+                <i>delete</i>
+                <span>Delete</span>
+            </a>
+        </nav>
+
+        <h3>{{ book.title }}</h3>
+
+        <div class="grid">
+            <div class="s12 m4">
+                <img class="responsive" src="{% include "books/_cover-src.html" with book=book %}">
+            </div>
+            <div class="s12 m8">
+                <div class="field label border">
+                    <input type="text" value="{{ book.title }}" readonly />
+                    <label>Title</label>
+                </div>
+                <div class="field label border">
+                    <input
+                        type="text"
+                        value="{% for author in book.authors.all %}{{ author.name }}{% if not forloop.last %}, {% endif %}{% empty %}No authors listed{% endfor %}"
+                        readonly
+                    />
+                    <label>Authors</label>
+                </div>
+                <div class="field label border">
+                    <input
+                        type="text"
+                        value="{{ book.isbn|default:'Not available' }}"
+                        readonly
+                    />
+                    <label>ISBN</label>
+                </div>
+                <div class="field label border">
+                    <input
+                        type="text"
+                        value="{{ book.publication_year|default:'Unknown' }}"
+                        readonly
+                    />
+                    <label>Publication Year</label>
+                </div>
+                <div class="field label border">
+                    <input
+                        type="text"
+                        value="{{ book.number_of_pages|default:'Unknown' }}"
+                        readonly
+                    />
+                    <label>Number of Pages</label>
+                </div>
+                {% if book.shelf %}
+                    <div class="field label border">
+                        <input
+                            type="text"
+                            value="{{ book.shelf.bookcase.name }} > {{ book.shelf.location }}"
+                            readonly
+                        />
+                        <label>Location</label>
+                        <span class="helper">
+                            <a href="{% url 'bookcase-update' book.shelf.bookcase.pk %}"
+                            >View Bookcase</a
+                                >
+                            </span>
+                        </div>
+                {% endif %}
+            </div>
+        </div>
+    </article>
+{% endblock content %}

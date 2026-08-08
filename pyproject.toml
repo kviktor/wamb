@@ -1,0 +1,54 @@
+[project]
+name = "wamb"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "==3.14.*"
+dependencies = [
+    "django==6.1.0",
+    "django-environ>=0.12.0",
+    "django-htmx>=1.27.0",
+    "beautifulsoup4>=4.14.3",
+    "httpx>=0.28.1",
+    "pydantic>=2.12.5",
+    "pillow>=12.0.0",
+]
+
+
+
+[tool.ruff]
+line-length = 91
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["F", "E", "B", "S", "DJ", "I001"]
+
+
+[tool.ruff.lint.isort.sections]
+"django" = ["django"]
+
+[tool.ruff.lint.isort]
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "django",
+    "first-party",
+    "local-folder",
+]
+from-first = true
+
+[tool.ruff.lint.per-file-ignores]
+"**/migrations/*" = ["E501"]
+"wikidata.py" = ["S324"]
+
+[tool.coverage.report]
+omit = ["**/migrations/*", "**/tests/*"]
+
+[dependency-groups]
+dev = [
+    "djade>=1.9.0",
+    "djhtml>=3.0.11",
+    "model-bakery>=1.24.0",
+    "parameterized>=0.9.0",
+]

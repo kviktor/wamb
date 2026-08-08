@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Book Case{% endblock %} {%
+block content %}
+<article>
+    <h3>Delete Book Case</h3>
+
+    <div class="large-space"></div>
+
+    <p class="large-text">
+        Are you sure you want to delete <strong>{{ bookcase.name }}</strong>?
+    </p>
+
+    <div class="space"></div>
+
+    {% if bookcase.shelves.count > 0 %}
+        <div class="padding round yellow-border">
+            <nav>
+                <i class="amber-text">warning</i>
+                <div>
+                    <strong>Warning:</strong> This book case contains {{
+                    bookcase.shelves.count }} shelf/shelves and all associated books
+                    will also be deleted.
+                </div>
+            </nav>
+        </div>
+        <div class="space"></div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+        <nav>
+            <button type="submit" class="button">
+                <i>delete</i>
+                <span>Yes, Delete</span>
+            </button>
+            <a
+                href="{% url 'bookcase-detail' bookcase.pk %}"
+                class="button border"
+            >
+                <i>cancel</i>
+                <span>Cancel</span>
+            </a>
+        </nav>
+    </form>
+</article>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ author.name }}{% endblock %}
+
+{% block content %}
+    <article>
+        <nav>
+            <a href="{% url 'author-list' %}" class="button border">
+                <i>arrow_back</i>
+                <span>Back to List</span>
+            </a>
+            <div class="max"></div>
+        </nav>
+
+        <h3>{{ author.name }}</h3>
+
+        <div class="grid">
+            <div class="s12 m4">
+                <img class="responsive" src="{% include "books/_cover-src.html" with author=author %}">
+            </div>
+            <div class="s12 m8">
+                <div class="field label border">
+                    <input type="text" value="{{ author.name }}" readonly />
+                    <label>Name</label>
+                </div>
+                <div class="field label border">
+                    <input
+                        type="text"
+                        value="{{ author.gender|default:'Not available' }}"
+                        readonly
+                    />
+                    <label>Gender</label>
+                </div>
+                <div class="field label border">
+                    <input
+                        type="text"
+                        value="{{ author.country|default:'Unknown' }}"
+                        readonly
+                    />
+                    <label>Country</label>
+                </div>
+                <div class="field label border">
+                    <input
+                        type="text"
+                        value="{{ author.birth_date|default:'Unknown' }}"
+                        readonly
+                    />
+                    <label>Birth date</label>
+                </div>
+            </div>
+        </div>
+    </article>
+{% endblock content %}
