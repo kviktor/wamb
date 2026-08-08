@@ -39,13 +39,13 @@ class IndexView(TemplateView):
 
 class AuthorListView(ListView):
     model = Author
-    template_name = "books/author_list.html"
+    template_name = "books/author/list.html"
     context_object_name = "authors"
 
 
 class AuthorDetailView(DetailView):
     model = Author
-    template_name = "books/author_detail.html"
+    template_name = "books/author/detail.html"
 
 
 class BookcaseListView(ListView):
@@ -54,20 +54,20 @@ class BookcaseListView(ListView):
         num_shelves=Count("shelves"),
         num_books=Count("shelves__books"),
     )
-    template_name = "books/bookcase_list.html"
+    template_name = "books/bookcase/list.html"
     context_object_name = "bookcases"
 
 
 class BookcaseCreateView(CreateView):
     model = Bookcase
-    template_name = "books/bookcase_create.html"
+    template_name = "books/bookcase/create.html"
     form_class = BookcaseCreateForm
     success_url = reverse_lazy("bookcase-list")
 
 
 class BookcaseUpdateView(UpdateView):
     model = Bookcase
-    template_name = "books/bookcase_update.html"
+    template_name = "books/bookcase/update.html"
     fields = ["name", "description"]
     success_url = reverse_lazy("bookcase-list")
     queryset = Bookcase.objects.prefetch_related(
@@ -82,14 +82,14 @@ class BookcaseUpdateView(UpdateView):
 
 class BookcaseDeleteView(DeleteView):
     model = Bookcase
-    template_name = "books/bookcase_confirm_delete.html"
+    template_name = "books/bookcase/confirm_delete.html"
     success_url = reverse_lazy("bookcase-list")
 
 
 class BookListView(ListView):
     model = Book
     queryset = Book.objects.order_by("-created_at")
-    template_name = "books/list/index.html"
+    template_name = "books/book/list/index.html"
     context_object_name = "books"
     paginate_by = 20
 
@@ -108,7 +108,7 @@ class BookListView(ListView):
 
 class BookDetailView(DetailView):
     model = Book
-    template_name = "books/book_detail.html"
+    template_name = "books/book/detail.html"
     context_object_name = "book"
 
 
@@ -118,7 +118,7 @@ def get_initial_shelf(request):
 
 
 class BookCreateView(TemplateView):
-    template_name = "books/book_add.html"
+    template_name = "books/book/create.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
@@ -159,14 +159,14 @@ class CreateBookMixin:
 class AddByISBNView(CreateBookMixin, CreateView):
     model = Book
     form_class = AddByISBNForm
-    template_name = "books/book_add.html#isbn-section"
+    template_name = "books/book/create.html#isbn-section"
     context_form_name = "isbn_form"
 
 
 class AddByURLView(CreateBookMixin, CreateView):
     model = Book
     form_class = AddByURLForm
-    template_name = "books/book_add.html#url-section"
+    template_name = "books/book/create.html#url-section"
     context_form_name = "url_form"
 
     def get_form_kwargs(self):
@@ -179,14 +179,14 @@ class AddByURLView(CreateBookMixin, CreateView):
 class ManualEntryView(CreateBookMixin, CreateView):
     model = Book
     form_class = ManualEntryForm
-    template_name = "books/book_add.html#manual-section"
+    template_name = "books/book/create.html#manual-section"
     success_url = reverse_lazy("book-list")
     context_form_name = "manual_form"
 
 
 class BookUpdateView(UpdateView):
     model = Book
-    template_name = "books/book_update.html"
+    template_name = "books/book/update.html"
     fields = [
         "shelf",
         "title",
@@ -199,7 +199,7 @@ class BookUpdateView(UpdateView):
 
 class BookDeleteView(DeleteView):
     model = Book
-    template_name = "books/book_confirm_delete.html"
+    template_name = "books/book/confirm_delete.html"
     success_url = reverse_lazy("book-list")
 
 

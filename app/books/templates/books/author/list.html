@@ -59,40 +59,7 @@
             </style>
 
             {% if is_paginated %}
-                <div class="padding">
-                    <nav class="center-align">
-                        {% if page_obj.has_previous %}
-                            <a href="?page=1" class="button border small">
-                                <i>first_page</i>
-                            </a>
-                            <a
-                                href="?page={{ page_obj.previous_page_number }}"
-                                class="button border small"
-                            >
-                                <i>chevron_left</i>
-                            </a>
-                        {% endif %}
-
-                        <span class="padding">
-                            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
-                        </span>
-
-                        {% if page_obj.has_next %}
-                            <a
-                                href="?page={{ page_obj.next_page_number }}"
-                                class="button border small"
-                            >
-                                <i>chevron_right</i>
-                            </a>
-                            <a
-                                href="?page={{ page_obj.paginator.num_pages }}"
-                                class="button border small"
-                            >
-                                <i>last_page</i>
-                            </a>
-                        {% endif %}
-                    </nav>
-                </div>
+                {% include "books/_pagination.html" %}
             {% endif %}
         {% else %}
             <div class="padding">
