@@ -47,7 +47,18 @@ class AddByISBNForm(forms.ModelForm):
     def save(self):
         book = create_book_object_from_pydantic(self.book)
         book.shelf = self.cleaned_data["shelf"]
-        book.save()
+        max_position = (
+            Book.objects.filter(shelf=book.shelf)
+            .order_by("-position")
+            .values_list("position", flat=True)
+            .first()
+        )
+        if max_position:
+            book.position = max_position + 1
+        else:
+            book.position = 0
+
+        book.save(update_fields=["shelf", "position"])
         return book
 
 
