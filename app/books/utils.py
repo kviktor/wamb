@@ -81,3 +81,10 @@ def create_book_object_from_pydantic(book: BookMetadata) -> Book:
     db_book.authors.set(authors)
 
     return db_book
+
+
+def get_int_or_default(value, default=None):
+    try:
+        return int(value)
+    except TypeError, ValueError:
+        return default

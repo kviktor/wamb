@@ -4,6 +4,7 @@ from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Prefetch
 from django.http import JsonResponse
 from django.urls import reverse_lazy
+from django.utils.functional import cached_property
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import (
     CreateView,
@@ -27,6 +28,7 @@ from .models import (
     BookShelf,
 )
 from .permissions import PermissionMixin
+from .utils import get_int_or_default
 
 
 class IndexView(LoginRequiredMixin, TemplateView):
@@ -97,6 +99,28 @@ class BookListView(PermissionMixin, ListView):
     context_object_name = "books"
     paginate_by = 20
 
+    @cached_property
+    def filter_data(self):
+        return {
+            "search": self.request.GET.get("search", "").strip(),
+            "author": get_int_or_default(self.request.GET.get("author")),
+            "bookcase": get_int_or_default(self.request.GET.get("bookcase")),
+        }
+
+    def get_queryset(self):
+        books = super().get_queryset()
+
+        if author_id := self.filter_data["author"]:
+            books = books.filter(authors=author_id)
+
+        if bookcase_id := self.filter_data["bookcase"]:
+            books = books.filter(bookcase=bookcase_id)
+
+        if search := self.filter_data["search"]:
+            books = books.filter(title__icontains=search)
+
+        return books
+
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
@@ -106,6 +130,9 @@ class BookListView(PermissionMixin, ListView):
         )
 
         ctx["view_mode"] = {"table": "table"}.get(self.request.GET.get("view"), "cover")
+        ctx["bookcases"] = Bookcase.objects.all().order_by("name")
+        ctx["authors"] = Author.objects.all().order_by("name")
+        ctx["filter_data"] = self.filter_data
 
         return ctx
 

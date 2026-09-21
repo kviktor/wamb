@@ -23,6 +23,45 @@
             </h3>
         </div>
 
+        <form method="GET" action="">
+            <div class="grid">
+                <div class="s12 m4">
+                    <div class="field label prefix border small">
+                        <i>search</i>
+                        <input type="text" name="search" value="{% if filter_data.search %}{{ filter_data.search }}{% endif %}">
+                        <label>Search</label>
+                    </div>
+                </div>
+                <div class="s12 m4">
+                    <div class="field label suffix border small">
+                        <select name="author">
+                            <option value="">-</option>
+                            {% for author in authors %}
+                                <option value="{{ author.id }}" {% if filter_data.author == author.id %}selected {% endif %}>{{ author.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>Author</label>
+                        <i>arrow_drop_down</i>
+                    </div>
+                </div>
+
+                <div class="s12 m3">
+                    <div class="field label suffix border small">
+                        <select name="bookcase">
+                            <option value="">-</option>
+                            {% for bookcase in bookcases %}
+                                <option value="{{ bookcase.id }}" {% if filter_data.bookcase == bookcase.id %}selected{% endif %}> {{ bookcase.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <label>Bookcase</label>
+                        <i>arrow_drop_down</i>
+                    </div>
+                </div>
+                <div class="s12 m1">
+                    <button class="small" style="margin-top: 3px;">Search</button>
+                </div>
+            </div>
+        </form>
 
         {% if books %}
             {% include "books/book/list/_"|add:view_mode|add:".html" %}
