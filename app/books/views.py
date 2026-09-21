@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import permission_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Prefetch
 from django.http import JsonResponse
@@ -28,7 +29,7 @@ from .models import (
 from .permissions import PermissionMixin
 
 
-class IndexView(TemplateView):
+class IndexView(LoginRequiredMixin, TemplateView):
     template_name = "index.html"
 
     def get_context_data(self, **kwargs):
