@@ -45,6 +45,7 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
 class AuthorListView(PermissionMixin, ListView):
     model = Author
+    queryset = Author.objects.all().order_by("name")
     template_name = "books/author/list.html"
     context_object_name = "authors"
 
