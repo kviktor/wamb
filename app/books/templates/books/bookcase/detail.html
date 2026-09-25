@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}{{ bookcase.name }} | Bookcase{% endblock %}
+
+{% block content %}
+    <article>
+        <h3>
+            {{ bookcase.name }}
+        </h3>
+
+        {% regroup bookcase.shelves.all by row as shelves %}
+
+        <table border="1">
+            {% for row in shelves %}
+                <tr>
+                    {% for shelf in row.list %}
+                        <td rowspan="{{ shelf.config.rowspan }}" colspan="{{ shelf.config.colspan }}">
+                            {{ shelf.location }}
+                            <br />
+                            <a href="/">{{ shelf.book_count }}</a>
+                        </td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    </article>
+
+    <style>
+        table {
+            text-align: center;
+            border-collapse: separate;
+            border: solid black 1px;
+            border-radius: 6px;
+
+            & td, & th {
+                border-left:solid black 1px;
+                border-top:solid black 1px;
+                padding: 30px;
+            }
+        }
+    </style>
+{% endblock content %}

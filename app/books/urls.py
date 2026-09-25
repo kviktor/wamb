@@ -8,6 +8,11 @@ urlpatterns = [
     path("bookcases/new/", views.BookcaseCreateView.as_view(), name="bookcase-create"),
     path(
         "bookcases/<int:pk>/",
+        views.BookcaseDetailView.as_view(),
+        name="bookcase-detail",
+    ),
+    path(
+        "bookcases/<int:pk>/edit/",
         views.BookcaseUpdateView.as_view(),
         name="bookcase-update",
     ),

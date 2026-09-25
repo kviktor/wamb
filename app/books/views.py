@@ -71,6 +71,19 @@ class BookcaseCreateView(PermissionMixin, CreateView):
     success_url = reverse_lazy("bookcase-list")
 
 
+class BookcaseDetailView(PermissionMixin, DetailView):
+    model = Bookcase
+    template_name = "books/bookcase/detail.html"
+    queryset = Bookcase.objects.prefetch_related(
+        Prefetch(
+            "shelves",
+            queryset=BookShelf.objects.annotate(
+                book_count=Count("books"),
+            ).select_related("bookcase"),
+        ),
+    )
+
+
 class BookcaseUpdateView(PermissionMixin, UpdateView):
     model = Bookcase
     template_name = "books/bookcase/update.html"
