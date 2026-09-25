@@ -125,9 +125,13 @@ def update_author(author) -> None:
     birth_date = get_claim_values(data, "P569")
     if birth_date:
         birth_date = birth_date[0]["time"].lstrip("+").replace("Z", "+00:00")
-        if "-00-00" in birth_date:
-            birth_date = birth_date.replace("-00-00", "-01-01")
-        values["birth_date"] = datetime.fromisoformat(birth_date)
+        if "-00" in birth_date:
+            birth_date = birth_date.replace("-00", "-01")
+
+        try:
+            values["birth_date"] = datetime.fromisoformat(birth_date)
+        except Exception:
+            logger.exception("wikidata.invalid_birth_date")
 
     image = get_image_url(data)
     if image and not author.image_id:

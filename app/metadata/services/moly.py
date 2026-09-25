@@ -103,10 +103,11 @@ class MolyClient(Client):
         edition_soup = BeautifulSoup(edition_response.content, "html.parser")
 
         # get the cover image
-        div_cover = edition_soup.find_all("div", class_="covers")[0]
-        img_tags = div_cover.find_all("img")
-        if img_tags:
-            data["cover_url"] = img_tags[0].attrs["src"].replace("/normal/", "/big/")
+        div_cover = edition_soup.find_all("div", class_="covers")
+        if div_cover:
+            img_tags = div_cover[0].find_all("img")
+            if img_tags:
+                data["cover_url"] = img_tags[0].attrs["src"].replace("/normal/", "/big/")
 
         div_content = edition_soup.find("div", class_="flex_content")
         if div_content:

@@ -72,7 +72,7 @@ def get_book_by_isbn(isbn: str) -> BookMetadata | None:
                     "olid": get_olid(author_data["key"]),
                 },
             )
-            for author in data["authors"]
+            for author in data.get("authors", [])
             if (author_data := client.get_author(get_olid(author["key"])))
         ],
         publication_year=parse_year(data.get("publication_year")),
