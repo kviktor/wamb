@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Prefetch
+from django.db.models import Count, Prefetch, Q
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.utils.functional import cached_property
@@ -48,6 +48,7 @@ class AuthorListView(PermissionMixin, ListView):
     queryset = Author.objects.all().order_by("name")
     template_name = "books/author/list.html"
     context_object_name = "authors"
+    paginate_by = 20
 
 
 class AuthorDetailView(PermissionMixin, DetailView):
@@ -131,7 +132,7 @@ class BookListView(PermissionMixin, ListView):
             books = books.filter(bookcase=bookcase_id)
 
         if search := self.filter_data["search"]:
-            books = books.filter(title__icontains=search)
+            books = books.filter(Q(title__icontains=search) | Q(isbn=search))
 
         return books
 

@@ -24,8 +24,8 @@ class BookMetadata(BaseModel):
     third_party_data: dict
 
     @property
-    def has_all_info(self):
-        return (
+    def has_all_info(self) -> bool:
+        return bool(
             self.isbn
             and self.title
             and self.cover_url
@@ -70,7 +70,7 @@ def get_book_by_isbn(isbn: str) -> BookMetadata | None:
         elif book:
             base_book = base_book.merge(book)
 
-        # if we have all the required informatin we should stop querying other services
+        # if we have all the required information we should stop querying other services
         if base_book and base_book.has_all_info:
             ISBNLookup.objects.create(isbn=isbn, serialized_data=base_book.model_dump())
             return base_book
