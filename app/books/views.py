@@ -129,7 +129,7 @@ class BookListView(PermissionMixin, ListView):
             books = books.filter(authors=author_id)
 
         if bookcase_id := self.filter_data["bookcase"]:
-            books = books.filter(bookcase=bookcase_id)
+            books = books.filter(shelf__bookcase=bookcase_id)
 
         if search := self.filter_data["search"]:
             books = books.filter(Q(title__icontains=search) | Q(isbn=search))
