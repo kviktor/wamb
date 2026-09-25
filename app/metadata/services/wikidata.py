@@ -34,9 +34,11 @@ def get_image_url(data) -> str | None:
         name = name.replace(" ", "_")
 
         name_hash = hashlib.md5(name.encode()).hexdigest()
+        quoted_name = quote(name)
         return (
-            f"https://upload.wikimedia.org/wikipedia/commons/"
-            f"{name_hash[:1]}/{name_hash[:2]}/{quote(name)}"
+            f"https://upload.wikimedia.org/wikipedia/commons/thumb/"
+            f"{name_hash[:1]}/{name_hash[:2]}/"
+            f"{quoted_name}/500px-{quoted_name}"
         )
 
 
