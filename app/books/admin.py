@@ -8,9 +8,21 @@ class ImageAdmin(admin.ModelAdmin):
     pass
 
 
+class BookInline(admin.TabularInline):
+    model = Author.books.through
+    fields = ("title",)
+    readonly_fields = ("title",)
+    can_delete = False
+    can_add = False
+    extra = 0
+
+    def title(self, obj):
+        return obj.book.title
+
+
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-    pass
+    inlines = [BookInline]
 
 
 @admin.register(Bookcase)
@@ -25,4 +37,5 @@ class BookShelfAdmin(admin.ModelAdmin):
 
 @admin.register(Book)
 class BookAdmin(admin.ModelAdmin):
-    pass
+    raw_id_fields = ("shelf", "cover", "authors", "added_by")
+    list_display = ("id", "title", "isbn", "shelf", "added_by")

@@ -82,7 +82,7 @@ class BookShelf(TimeStampedModel):
         ordering = ("row", "column")
 
     def __str__(self):
-        return f"{self.name} ({self.bookcase})"
+        return f"{self.bookcase} ({self.location})"
 
     @property
     def location(self):
