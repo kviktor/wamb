@@ -8,9 +8,9 @@
             <h3>
                 <i>person_search</i>
                 Authors
-                <a href="{% url 'book-create' %}" class="button right absolute">
+                <a href="{% url 'author-create' %}" class="button right absolute">
                     <i>add</i>
-                    <span>Add New Author</span>
+                    <span>Add new author</span>
                 </a>
             </h3>
         </div>
@@ -22,13 +22,30 @@
             </a>
         {% endfor %}
 
+        <form method="GET" action="">
+            <div class="grid">
+                <div class="s11">
+                    <div class="field label prefix border small">
+                        <i>search</i>
+                        <input type="text" name="search" value="{% if filter_data.search %}{{ filter_data.search }}{% endif %}">
+                        <label>Search</label>
+                    </div>
+                </div>
+
+                <div class="s1">
+                    <button>Search</button>
+                </div>
+            </div>
+        </form>
+
+
         {% if authors %}
             <div class="grid">
                 {% for author in authors %}
                     <div class="s6 m4 l3">
                         <a href="{% url "author-detail" pk=author.pk %}">
                             <article class="no-padding border cover-card">
-                                <img class="responsive medium" src="{% include "books/_cover-src.html" with book=book %}">
+                                <img class="responsive medium" src="{% include "books/_cover-src.html" with author=author%}">
                                 <div class="row absolute bottom left right padding bottom-shadow white-text cover-title">
                                     <h5>{{ author.name }}</h5>
                                 </div>
@@ -64,8 +81,8 @@
         {% else %}
             <div class="padding">
                 <p>
-                    No books found.
-                    <a href="{% url 'book-create' %}">Create one now</a>.
+                    No author found.
+                    <a href="{% url 'author-create' %}" class="button small">Create one now</a>
                 </p>
             </div>
         {% endif %}

@@ -23,6 +23,7 @@ urlpatterns = [
     ),
     # Author URLs
     path("authors/", views.AuthorListView.as_view(), name="author-list"),
+    path("authors/new/", views.AuthorCreateView.as_view(), name="author-create"),
     path("authors/<int:pk>/", views.AuthorDetailView.as_view(), name="author-detail"),
     # Book URLs
     path("books/", views.BookListView.as_view(), name="book-list"),

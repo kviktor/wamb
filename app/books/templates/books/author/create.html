@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Add author{% endblock %}
+
+{% block content %}
+    <article>
+        <h3>
+            Add a new author
+        </h3>
+
+        <form method="post">
+            {% csrf_token %} {% if form.errors %}
+                <div class="error-text padding">
+                    <i>error</i>
+                    <span>Please correct the errors below</span>
+                </div>
+            {% endif %}
+
+            <div class="field label border">
+                {{ form.name }}
+                <label>Name</label>
+                {% if form.name.errors %}
+                    <span class="error">{{ form.name.errors.0 }}</span>
+                {% endif %}
+            </div>
+
+            <nav>
+                <button type="submit" class="button">
+                    <i>save</i>
+                    <span>Save</span>
+                </button>
+                <a href="{% url 'author-list' %}" class="button border">
+                    <i>cancel</i>
+                    <span>Cancel</span>
+                </a>
+            </nav>
+        </form>
+    </article>
+{% endblock content %}

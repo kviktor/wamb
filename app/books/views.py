@@ -50,10 +50,36 @@ class AuthorListView(PermissionMixin, ListView):
     context_object_name = "authors"
     paginate_by = 20
 
+    @cached_property
+    def filter_data(self):
+        return {
+            "search": self.request.GET.get("search", "").strip(),
+        }
+
+    def get_queryset(self):
+        authors = super().get_queryset()
+
+        if search := self.filter_data["search"]:
+            authors = authors.filter(name__icontains=search)
+
+        return authors
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["filter_data"] = self.filter_data
+        return ctx
+
 
 class AuthorDetailView(PermissionMixin, DetailView):
     model = Author
     template_name = "books/author/detail.html"
+
+
+class AuthorCreateView(PermissionMixin, CreateView):
+    model = Author
+    template_name = "books/author/create.html"
+    fields = ("name",)
+    success_url = reverse_lazy("author-list")
 
 
 class BookcaseListView(PermissionMixin, ListView):
