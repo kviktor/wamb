@@ -10,32 +10,56 @@
 
         {% regroup bookcase.shelves.all by row as shelves %}
 
-        <table border="1">
+        <table>
             {% for row in shelves %}
                 <tr>
                     {% for shelf in row.list %}
                         <td rowspan="{{ shelf.config.rowspan }}" colspan="{{ shelf.config.colspan }}">
-                            {{ shelf.location }}
-                            <br />
-                            <a href="/">{{ shelf.book_count }}</a>
+                            <div class="row scroll" style="gap: 5px; text-align: center;">
+                                {% for book in shelf.books.all %}
+                                    <a href="{% url "book-detail" pk=book.pk %}" title="{{ book.title }}">
+                                        <img src="{% include "books/_cover-src.html" with book=book %}"/>
+                                    </a>
+                                {% endfor %}
+                            </div>
                         </td>
                     {% endfor %}
                 </tr>
             {% endfor %}
         </table>
+    </div>
     </article>
+
 
     <style>
         table {
-            text-align: center;
-            border-collapse: separate;
-            border: solid black 1px;
-            border-radius: 6px;
+            table-layout: fixed;
+            background: var(--primary);
 
-            & td, & th {
-                border-left:solid black 1px;
-                border-top:solid black 1px;
+            & td {
                 padding: 30px;
+                &::after {
+                    content: "";
+                    display: block;
+                    width: 100%;
+                    height: 10px;
+                    background: var(--secondary);
+                    margin-top: 5px;
+                    border: 1px solid black;
+                    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+
+                }
+            }
+
+            & a {
+                border: 1px solid rgba(0, 0, 0, 0.2);
+                margin: 0;
+                box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+                img {
+                    height: 150px;
+                    margin: 0;
+                }
+
             }
         }
     </style>
