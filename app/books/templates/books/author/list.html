@@ -10,7 +10,7 @@
                 Authors
                 <a href="{% url 'author-create' %}" class="button right absolute">
                     <i>add</i>
-                    <span>Add new author</span>
+                    <span class="max m l">Add new author</span>
                 </a>
             </h3>
         </div>
@@ -57,7 +57,12 @@
 
             <style>
                 article img {
-                    min-height: 420px;
+                    @media (width <= 601px) {
+                        min-height: 260px;
+                    }
+                    @media (width > 601px) {
+                        min-height: 420px;
+                    }
                 }
 
                 .cover-title h5 {

@@ -23,7 +23,13 @@
 
     .cover-card {
         width: 100%;
-        height: 420px;
+
+        @media (width <= 601px) {
+            height: 260px;
+        }
+        @media (width > 601px) {
+            height: 420px;
+        }
     }
 
     .cover-title h5 {
