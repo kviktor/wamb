@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 
 from pathlib import Path
 import os
+import sys
 
 import environ
 
@@ -182,3 +183,7 @@ if SENTRY_DSN:
 
 if SECURE_PROXY_SSL_HEADER_NAME := env.str("SECURE_PROXY_SSL_HEADER_NAME", default=""):
     SECURE_PROXY_SSL_HEADER = (SECURE_PROXY_SSL_HEADER_NAME, "https")
+
+if "test" in sys.argv:
+    # to avoid needing collectstatic for tests
+    STORAGES["staticfiles"]["BACKEND"] = "django.core.files.storage.FileSystemStorage"
