@@ -11,20 +11,29 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
+
+import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 APP_DIR = BASE_DIR / "app"
+
+env = environ.Env(
+    # set casting, default value
+    DEBUG=(bool, False)
+)
+environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-t9s9tsmnorn2g6x5uhknhbty^76g63n35w%^pr_todetmh6n5b"
+SECRET_KEY = env.str("SECRET_KEY", default="")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = ["*"]
 
@@ -127,6 +136,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [
     APP_DIR / "static",
 ]
@@ -137,7 +147,21 @@ MEDIA_URL = "media/"
 
 # Custom user model
 AUTH_USER_MODEL = "users.User"
+LOGIN_URL = "login"
 
-DOWNLOAD_COVER_IMAGES = True
+# if set to true download images (author and book cover), otherwise hotlink
+DOWNLOAD_IMAGES = env.bool("DOWNLOAD_IMAGES", default=False)
 
-SERVE_MEDIA_FILES = True
+# if set to true the application will serve the downloaded media files
+SERVE_MEDIA_FILES = env.bool("SERVE_MEDIA_FILES", default=False)
+
+
+SENTRY_DSN = env.str("SENTRY_DSN", default="")
+if SENTRY_DSN:
+    import sentry_sdk
+
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        send_default_pii=True,
+        enable_logs=True,
+    )
