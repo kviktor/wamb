@@ -34,8 +34,12 @@ SECRET_KEY = env.str("SECRET_KEY", default="")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", default=True)
+BASE_URL = env.str("BASE_URL", default="http://localhost:8000")
 
-ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=["*"])
+HOSTNAME = BASE_URL.replace("https://", "").replace("http://", "")
+ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[HOSTNAME])
+
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[BASE_URL])
 
 
 # Application definition
@@ -175,3 +179,6 @@ if SENTRY_DSN:
         send_default_pii=True,
         enable_logs=True,
     )
+
+if SECURE_PROXY_SSL_HEADER_NAME := env.str("SECURE_PROXY_SSL_HEADER_NAME", default=""):
+    SECURE_PROXY_SSL_HEADER = (SECURE_PROXY_SSL_HEADER_NAME, "https")
