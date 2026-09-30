@@ -28,6 +28,11 @@ ENV PYTHONUNBUFFERED=1 \
 # setup a non-root user
 RUN addgroup --system --gid 1000 nonroot \
     && adduser --system --uid 1000 --ingroup nonroot --disabled-password nonroot
+
+# create a directory for the database file
+RUN mkdir /db \
+    && chown nonroot:nonroot /db
+
 USER nonroot
 
 # copy .venv (dependencies) from builder
