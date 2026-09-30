@@ -1,21 +1,16 @@
 {% load django_htmx %}
+{% load static %}
 <!doctype html>
 <html lang="en">
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>{% block title %}WAMB - Where Are My Books{% endblock %}</title>
-        <link
-            href="https://cdn.jsdelivr.net/npm/beercss@4.0.23/dist/cdn/beer.min.css"
-            rel="stylesheet"
-        />
+        <link href="{% static "css/beer.min.css" %}" rel="stylesheet"/>
+        <link href="{% static "css/colors.css" %}" rel="stylesheet"/>
         <script
             type="module"
             src="https://cdn.jsdelivr.net/npm/beercss@4.0.23/dist/cdn/beer.min.js"
-        ></script>
-        <script
-            type="module"
-            src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.4/dist/cdn/material-dynamic-colors.min.js"
         ></script>
         {% htmx_script %}
     </head>
