@@ -36,7 +36,7 @@ SECRET_KEY = env.str("SECRET_KEY", default="")
 DEBUG = env.bool("DEBUG", default=True)
 BASE_URL = env.str("BASE_URL", default="http://localhost:8000")
 
-HOSTNAME = BASE_URL.replace("https://", "").replace("http://", "")
+HOSTNAME = BASE_URL.replace("https://", "").replace("http://", "").replace(":8000", "")
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[HOSTNAME])
 
 CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[BASE_URL])
