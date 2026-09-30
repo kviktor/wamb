@@ -1,58 +1,36 @@
-{% load django_htmx %}
-<!doctype html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>{% block title %}WAMB - Where Are My Books{% endblock %}</title>
-        <link
-            href="https://cdn.jsdelivr.net/npm/beercss@4.0.23/dist/cdn/beer.min.css"
-            rel="stylesheet"
-        />
-        <script
-            type="module"
-            src="https://cdn.jsdelivr.net/npm/beercss@4.0.23/dist/cdn/beer.min.js"
-        ></script>
-        <script
-            type="module"
-            src="https://cdn.jsdelivr.net/npm/material-dynamic-colors@1.1.4/dist/cdn/material-dynamic-colors.min.js"
-        ></script>
-        {% htmx_script %}
-    </head>
-    <body class="light" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}'>
+{% extends "base.html" %}
 
-        <main class="responsive">
-            <article class="small-round padding border medium no-padding">
-                <div class="padding absolute middle center">
-                    <h5>Login</h5>
-                    <div class="space"></div>
+{% block content %}
 
-                    <form method="POST" action="">
-                        {% csrf_token %}
-                        {% if form.non_field_errors %}
-                            <div class="white-text red8">{{ form.non_field_errors.0 }}</div>
-                        {% endif %}
+    <article class="small-round padding border medium no-padding">
+        <div class="padding absolute middle center">
+            <h5>Login</h5>
+            <div class="space"></div>
 
-                        <div class="field label suffix border small {% if form.username.errors %}invalid{% endif %}">
-                            <input type="text" autofocus autocomplete="username" name="username">
-                            <label>Email</label>
-                            {% if form.username.errors %}
-                                <output class="invalid">{{ form.username.errors.0 }}</output>
-                            {% endif %}
-                        </div>
-                        <div class="field label suffix border small {% if form.password.errors %}invalid{% endif %}">
-                            <input type="password" autocomplete="current-password" name="password">
-                            <label>Password</label>
-                            <i class="front">visibility</i>
-                            {% if form.password.errors %}
-                                <output class="invalid">{{ form.password.errors.0 }}</output>
-                            {% endif %}
-                        </div>
-                        <div class="space"></div>
-                        <button class="responsive">Login</button>
-                    </form>
+            <form method="POST" action="">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="white-text red8">{{ form.non_field_errors.0 }}</div>
+                {% endif %}
+
+                <div class="field label suffix border small {% if form.username.errors %}invalid{% endif %}">
+                    <input type="text" autofocus autocomplete="username" name="username">
+                    <label>Email</label>
+                    {% if form.username.errors %}
+                        <output class="invalid">{{ form.username.errors.0 }}</output>
+                    {% endif %}
                 </div>
-            </article>
-        </main>
-    </body>
-</html>
+                <div class="field label suffix border small {% if form.password.errors %}invalid{% endif %}">
+                    <input type="password" autocomplete="current-password" name="password">
+                    <label>Password</label>
+                    <i class="front">visibility</i>
+                    {% if form.password.errors %}
+                        <output class="invalid">{{ form.password.errors.0 }}</output>
+                    {% endif %}
+                </div>
+                <div class="space"></div>
+                <button class="responsive">Login</button>
+            </form>
+        </div>
+    </article>
+{% endblock content %}

@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block nav %}
+    <nav class="left max l">
+        <header>
+            <nav>
+                <i class="circle extra primary padding">auto_stories</i>
+                <h6>WAMB</h6>
+            </nav>
+        </header>
+        <a href="/">
+            <i>home</i>
+            <div>Home</div>
+        </a>
+        <a href="{% url 'book-list' %}">
+            <i>book_2</i>
+            <div>Books</div>
+        </a>
+        <a href="{% url 'bookcase-list' %}">
+            <i>shelves</i>
+            <div>Bookcases</div>
+        </a>
+        <a href="{% url 'author-list' %}">
+            <i>person_search</i>
+            <div>Authors</div>
+        </a>
+        <a class="absolute bottom">
+            <i>account_circle</i>
+            <div>User</div>
+        </a>
+    </nav>
+
+    <nav class="left m">
+        <header>
+            <i class="circle extra primary padding">auto_stories</i>
+        </header>
+        <a href="/">
+            <i>home</i>
+            <div>Home</div>
+        </a>
+        <a href="{% url 'book-list' %}">
+            <i>book_2</i>
+            <div>Books</div>
+        </a>
+        <a href="{% url 'bookcase-list' %}">
+            <i>shelves</i>
+            <div>Bookcases</div>
+        </a>
+        <a href="{% url 'author-list' %}">
+            <i>person_search</i>
+            <div>Authors</div>
+        </a>
+        <a class="absolute bottom">
+            <i>account_circle</i>
+            <div>User</div>
+        </a>
+    </nav>
+
+    <nav class="bottom s">
+        <a href="{% url 'bookcase-list' %}">
+            <i>home</i>
+            <div>Home</div>
+        </a>
+        <a href="{% url 'book-list' %}">
+            <i>book_2</i>
+            <div>Books</div>
+        </a>
+        <a href="{% url 'bookcase-list' %}">
+            <i>shelves</i>
+            <div>Bookcases</div>
+        </a>
+        <a href="{% url 'author-list' %}">
+            <i>person_search</i>
+            <div>Authors</div>
+        </a>
+    </nav>
+{% endblock nav %}
