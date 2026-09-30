@@ -1,0 +1,28 @@
+name: CI tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v7
+    - name: Set up Python 3.14
+      uses: actions/setup-python@v7
+      with:
+        python-version: 3.14
+    - name: Install dependencies
+      run: |
+        uv sync --locked --no-install-project
+    - name: Run ruff
+      run: |
+        ruff format --check app/
+        ruff check app/
+        djhtml --check app/
+    - name: Run tests
+      run: |
+        python manage.py test
