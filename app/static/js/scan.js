@@ -3,8 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const stopBtn = document.getElementById("stopScan");
     const interactive = document.getElementById("interactive");
     const cameraSelect = document.getElementById("camera");
-    const snackbar = document.getElementById("feedback");
-    var selectedDeviceId = null;
+    const feedback = document.getElementById("feedback");
+    let selectedDeviceId = null;
+    const seenCodes = new Set();
 
     function startScan() {
         interactive.replaceChildren();
@@ -39,8 +40,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         Quagga.onDetected(function (result) {
             const code = result.codeResult.code;
-            alert(code + " (" + code.length + ")");
-            if (code.length === 13 || code.length === 10) {
+            if ((code.length === 13 || code.length === 10) && !seenCodes.has(code)) {
+                seenCodes.add(code);
                 queryISBN(code);
                 console.log("Found code: " + code);
             }
@@ -89,12 +90,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if (
                 device.facingMode == "environment" ||
                 device.label.indexOf("facing back") >= 0
-            )
+            ) {
                 selectedDeviceId = device.deviceId;
-            cameraSelect.value = device.deviceId;
+                cameraSelect.value = device.deviceId;
+            }
         });
 
-        if (!selectedDeviceId === null && videoDevices.length > 0) {
+        if (selectedDeviceId === null && videoDevices.length > 0) {
             cameraSelect.value = videoDevices[0].deviceId;
             selectedDeviceId = videoDevices[0].deviceId;
         }
@@ -103,7 +105,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function addFeedback(content, className) {
-        feedback = document.getElementById("feedback");
         feedback.classList = [];
         feedback.classList.add("snackbar", className);
         feedback.innerHTML = content;
@@ -112,7 +113,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function removeFeedback() {
-        feedback = document.getElementById("feedback");
         feedback.hidePopover();
     }
 
@@ -153,6 +153,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 "error",
             );
             setTimeout(removeFeedback, 3000);
+            // in case of error remove it from seen ISBN set
+            seenCodes.delete(isbn);
         }
     }
 });
