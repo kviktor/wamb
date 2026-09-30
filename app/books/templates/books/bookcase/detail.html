@@ -15,10 +15,10 @@
                 <tr>
                     {% for shelf in row.list %}
                         <td rowspan="{{ shelf.config.rowspan }}" colspan="{{ shelf.config.colspan }}">
-                            <div class="row scroll" style="gap: 5px; text-align: center;">
+                            <div class="row scroll">
                                 {% for book in shelf.books.all %}
                                     <a href="{% url "book-detail" pk=book.pk %}" title="{{ book.title }}">
-                                        <img src="{% include "books/_cover-src.html" with book=book %}"/>
+                                        <img src="{{ book.get_cover_url }}"/>
                                     </a>
                                 {% endfor %}
                             </div>
@@ -29,7 +29,6 @@
         </table>
     </div>
     </article>
-
 
     <style>
         table {
@@ -60,6 +59,10 @@
                     margin: 0;
                 }
 
+            }
+
+            .row {
+                gap: 5px;
             }
         }
     </style>

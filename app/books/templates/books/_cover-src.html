@@ -1,1 +1,0 @@
-{% load static %}{% if book %}{% if book.cover %}{{ book.cover.image.url }}{% else %}{% static "img/placeholder_book.webp" %}{% endif %}{% endif %}{% if author %}{% if author.image %}{{ author.image.image.url }}{% else %}{% static "img/placeholder_author.webp" %}{% endif %}{% endif %}

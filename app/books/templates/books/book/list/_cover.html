@@ -3,7 +3,7 @@
         <div class="s6 m4 l3">
             <a href="{% url "book-detail" pk=book.pk %}">
                 <article class="no-padding border cover-card">
-                    <img class="responsive" src="{% include "books/_cover-src.html" with book=book %}">
+                    <img class="responsive" src="{{ book.get_cover_url }}">
                     {% if not book.cover %}
                         <div class="row absolute bottom left right padding bottom-shadow white-text cover-title">
                             <h5>{{ book.title }}</h5>

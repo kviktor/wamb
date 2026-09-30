@@ -2,6 +2,7 @@ import itertools
 
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.templatetags.static import static
 
 User = get_user_model()
 
@@ -21,6 +22,14 @@ class Image(TimeStampedModel):
     def __str__(self):
         return self.source
 
+    def get_url(self) -> str | None:
+        if self.image:
+            return self.image.url
+        elif self.source:
+            return self.source
+        else:
+            return None
+
 
 class Author(TimeStampedModel):
     name = models.CharField(max_length=200)
@@ -33,6 +42,19 @@ class Author(TimeStampedModel):
 
     def __str__(self):
         return self.name
+
+    def get_image_url(self):
+        if not self.image_id:
+            return static("img/placeholder_author.webp")
+
+        return self.image.get_url()
+
+    @property
+    def country_emoji(self) -> str:
+        if not self.country:
+            return ""
+
+        return "".join([chr(ord(c) + 127397) for c in self.country])
 
 
 class Bookcase(TimeStampedModel):
@@ -139,3 +161,9 @@ class Book(TimeStampedModel):
             text = f"{text} ({self.isbn})"
 
         return text
+
+    def get_cover_url(self):
+        if not self.cover_id:
+            return static("img/placeholder_book.webp")
+
+        return self.cover.get_url()

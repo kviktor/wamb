@@ -9,45 +9,37 @@
                 <i>arrow_back</i>
                 <span>Back to List</span>
             </a>
-            <div class="max"></div>
         </nav>
-
-        <h3>{{ author.name }}</h3>
 
         <div class="grid">
             <div class="s12 m4">
-                <img class="responsive" src="{% include "books/_cover-src.html" with author=author %}">
+                <img class="responsive" src="{{ author.get_image_url }}">
             </div>
             <div class="s12 m8">
-                <div class="field label border">
-                    <input type="text" value="{{ author.name }}" readonly />
-                    <label>Name</label>
-                </div>
-                <div class="field label border">
-                    <input
-                        type="text"
-                        value="{{ author.gender|default:'Not available' }}"
-                        readonly
-                    />
-                    <label>Gender</label>
-                </div>
-                <div class="field label border">
-                    <input
-                        type="text"
-                        value="{{ author.country|default:'Unknown' }}"
-                        readonly
-                    />
-                    <label>Country</label>
-                </div>
-                <div class="field label border">
-                    <input
-                        type="text"
-                        value="{{ author.birth_date|default:'Unknown' }}"
-                        readonly
-                    />
-                    <label>Birth date</label>
-                </div>
+                <h3>{{ author.name }}</h3>
+                <strong>Country:</strong>
+                {% if author.country %}
+                    {{ author.country_emoji }} ({{ author.country }})
+                {% else %}
+                    -
+                {% endif %}
+                <br />
+                <strong>Gender:</strong> {{ author.gender|default:"Not available" }}
+                <br />
+                <strong>Birth date:</strong> {{ author.birth_date|default:"Unknown" }}
+            </div>
+            <div class="s12 m12">
+                {% for book in author.books.all %}
+                    <a href="{% url "book-detail" pk=book.pk %}" title="{{ book.title }}">
+                        <img src="{{ book.get_cover_url }}"/>
+                    </a>
+                {% endfor %}
             </div>
         </div>
     </article>
+    <style>
+        a img {
+            max-height: 200px;
+        }
+    </style>
 {% endblock content %}
