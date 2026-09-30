@@ -13,7 +13,6 @@ ENV UV_NO_DEV=1
 
 WORKDIR /app
 
-RUN uv venv /opt/venv
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
