@@ -10,9 +10,10 @@ from django.views.static import serve
 from app.books import views
 
 urlpatterns = [
-    path("", views.IndexView.as_view()),
+    path("", views.IndexView.as_view(), name="index"),
     path("admin/", admin.site.urls),
     path("", include("app.books.urls")),
+    path("", include("app.users.urls")),
 ]
 
 if settings.SERVE_MEDIA_FILES:
