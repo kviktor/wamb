@@ -185,5 +185,6 @@ if SECURE_PROXY_SSL_HEADER_NAME := env.str("SECURE_PROXY_SSL_HEADER_NAME", defau
     SECURE_PROXY_SSL_HEADER = (SECURE_PROXY_SSL_HEADER_NAME, "https")
 
 if "test" in sys.argv:
+    SECRET_KEY = "secret"
     # to avoid needing collectstatic for tests
     STORAGES["staticfiles"]["BACKEND"] = "django.core.files.storage.FileSystemStorage"
