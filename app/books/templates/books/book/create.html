@@ -4,6 +4,7 @@
 {% block title %}New Book{% endblock %}
 
 {% block content %}
+    {{ recent_bookcases_json|json_script:"recent-bookcases" }}
     <script src="{% static 'js/bookcase.js' %}"></script>
     <article>
         <div class="tabs">

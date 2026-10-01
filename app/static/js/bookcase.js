@@ -170,6 +170,15 @@ class ShelfSelector {
                 e.preventDefault();
                 this.dialog.close();
             });
+
+        const recent = document.getElementById("recent-bookcases");
+        if(recent) {
+            try {
+                this.createResultsList({"results": JSON.parse(recent.textContent)});
+            } catch(error) {
+                alert(error);
+            }
+        }
     }
 
     async handleSearch(value) {

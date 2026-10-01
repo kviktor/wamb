@@ -206,6 +206,9 @@ class BookCreateView(PermissionMixin, TemplateView):
         ctx["isbn_form"] = AddByISBNForm(initial=initial)
         ctx["url_form"] = AddByURLForm(initial=initial)
         ctx["manual_form"] = ManualEntryForm(initial=initial)
+        ctx["recent_bookcases_json"] = [
+            bookcase.as_json() for bookcase in Bookcase.objects.order_by("-created_at")[:4]
+        ]
 
         return ctx
 

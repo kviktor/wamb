@@ -88,6 +88,13 @@ class Bookcase(TimeStampedModel):
             )
         return rows
 
+    def as_json(self) -> dict:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "shelves_config": self.shelves_config,
+        }
+
 
 class BookShelf(TimeStampedModel):
     bookcase = models.ForeignKey(
