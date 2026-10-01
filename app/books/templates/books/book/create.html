@@ -36,7 +36,7 @@
                     action="{% url 'book-create-isbn' %}"
                     hx-post="{% url 'book-create-isbn' %}"
                     hx-swap="outerHTML"
-                    hx-disabled-elt="find #add-btn"
+                    hx-disabled-elt="button"
                 >
                     {% csrf_token %} {% if isbn_form.errors %}
                         <div class="error-text padding">
@@ -63,8 +63,9 @@
 
                     <div class="space"></div>
                     <nav>
-                        <button type="submit" class="button" id="add-btn">
+                        <button type="submit" class="button">
                             <i>search</i>
+                            <progress class="circle small"></progress>
                             <span>Add Book</span>
                         </button>
                         <a href="{% url 'book-list' %}" class="button border">
@@ -83,7 +84,7 @@
                     action="{% url 'book-create-url' %}"
                     hx-post="{% url 'book-create-url' %}"
                     hx-swap="outerHTML"
-                    hx-disabled-elt="find button"
+                    hx-disabled-elt="button"
                 >
                     {% csrf_token %} {% if url_form.errors %}
                         <div class="error-text padding">
@@ -114,6 +115,7 @@
                     <nav>
                         <button type="submit" class="button">
                             <i>add</i>
+                            <progress class="circle small"></progress>
                             <span>Add Book</span>
                         </button>
                         <a href="{% url 'book-list' %}" class="button border">
@@ -261,6 +263,11 @@
             border-radius: 10px;
             overflow: hidden;
         }
+    </style>
+    <style>
+        form progress { display: none; }
+        form.htmx-request button > i { display: none; }
+        form.htmx-request button > progress { display: inline-flex; }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2/dist/quagga.min.js"></script>
