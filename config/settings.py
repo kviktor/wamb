@@ -188,3 +188,5 @@ if "test" in sys.argv:
     SECRET_KEY = "secret"
     # to avoid needing collectstatic for tests
     STORAGES["staticfiles"]["BACKEND"] = "django.core.files.storage.FileSystemStorage"
+    # in-memory database for tests
+    DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
