@@ -184,20 +184,22 @@ class BookDetailView(PermissionMixin, DetailView):
     context_object_name = "book"
 
 
-def get_initial_shelf(request):
-    if shelf_id := request.session.get("last_used_shelf"):
-        return BookShelf.objects.get(pk=shelf_id)
-
-
 class BookCreateView(PermissionMixin, TemplateView):
     template_name = "books/book/create.html"
     model = Book  # required only for permission check
+
+    def get_initial_shelf(self):
+        if shelf_id := self.request.session.get("last_used_shelf"):
+            try:
+                return BookShelf.objects.get(pk=shelf_id)
+            except BookShelf.DoesNotExist:
+                self.request.session.pop("last_used_shelf")
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
 
         initial = {}
-        if shelf := get_initial_shelf(self.request):
+        if shelf := self.get_initial_shelf():
             initial["shelf"] = shelf
             ctx["shelf"] = shelf
 
