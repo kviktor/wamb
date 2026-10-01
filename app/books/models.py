@@ -123,6 +123,20 @@ class BookShelf(TimeStampedModel):
 
         return f"{column_name}{row}"
 
+    def get_next_position(self) -> int:
+        """returns the next position on the shelf, left to right"""
+        max_position = (
+            Book.objects.filter(shelf=self)
+            .order_by("-position")
+            .values_list("position", flat=True)
+            .first()
+        )
+
+        if max_position is not None:
+            return min(max_position + 1, 32767)
+        else:
+            return 0
+
 
 class Book(TimeStampedModel):
     shelf = models.ForeignKey(
