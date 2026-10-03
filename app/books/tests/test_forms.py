@@ -4,69 +4,35 @@ from model_bakery import baker
 
 from django.test import TestCase
 
-from app.books import (
-    models,
-    utils,
-)
-from app.metadata.services.base import (
-    AuthorMetadata,
-    BookMetadata,
-)
+from app.books import forms
 
 
-class CreateBookObjectFromPydantic(TestCase):
-    def setUp(self):
-        self.metadata = BookMetadata(
-            isbn="",
-            title="t",
-            cover_url=None,
-            third_party_data={},
-            authors=[
-                AuthorMetadata(
-                    name="author name",
-                    gender="",
-                    country="",
-                    birth_date=None,
-                    third_party_data={"3rd": "yes"},
-                )
-            ],
-            publication_year=None,
-            number_of_pages=None,
-        )
-        patcher = mock.patch("app.metadata.services.wikidata.update_author")
-        self.p_update_author = patcher.start()
-        self.addCleanup(patcher.stop)
+class AddByISBNFormTest(TestCase):
+    @mock.patch("app.books.forms.get_book_by_isbn")
+    @mock.patch("app.books.forms.create_book_object_from_pydantic")
+    def test_save_no_shelf(self, p_create, p_get):
+        p_get.return_value = "pydantic book object"
+        book = baker.make("books.Book", shelf=None)
+        p_create.return_value = book
 
-    def test_new_author(self):
-        utils.create_book_object_from_pydantic(self.metadata)
+        form = forms.AddByISBNForm({"isbn": 1_000_000_000_000})
 
-        author = models.Author.objects.get(name="author name")
-        self.assertEqual(author.third_party_data, {"3rd": "yes"})
-        self.p_update_author.assert_called_once_with(author)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertIsNone(book.shelf)
+        self.assertEqual(book.position, 0)
 
-    def test_existing_author(self):
-        author = baker.make(
-            models.Author, name="author name", third_party_data={"3rd": "yes"}
-        )
+    @mock.patch("app.books.forms.get_book_by_isbn")
+    @mock.patch("app.books.forms.create_book_object_from_pydantic")
+    def test_save_with_shelf(self, p_create, p_get):
+        p_get.return_value = "pydantic book object"
+        book = baker.make("books.Book", shelf=None)
+        p_create.return_value = book
+        shelf = baker.make("books.BookShelf")
 
-        book = utils.create_book_object_from_pydantic(self.metadata)
+        form = forms.AddByISBNForm({"isbn": 1_000_000_000_000, "shelf": shelf.pk})
 
-        self.assertEqual(author, book.authors.get())
-        self.p_update_author.assert_not_called()
-
-    def test_same_author_different_third_party(self):
-        author = baker.make(
-            models.Author, name="author name", third_party_data={"another": "one"}
-        )
-
-        utils.create_book_object_from_pydantic(self.metadata)
-
-        author.refresh_from_db()
-        self.assertEqual(
-            author.third_party_data,
-            {
-                "3rd": "yes",
-                "another": "one",
-            },
-        )
-        self.p_update_author.assert_not_called()
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(book.shelf, shelf)
+        self.assertEqual(book.position, 0)

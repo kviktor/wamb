@@ -13,7 +13,20 @@ from app.metadata.services import (
 )
 
 
-class AddByISBNForm(forms.ModelForm):
+class BookSaveMixin:
+    def save(self):
+        book = create_book_object_from_pydantic(self.book)
+
+        if shelf := self.cleaned_data["shelf"]:
+            book.shelf = shelf
+            book.position = book.shelf.get_next_position()
+
+        book.save(update_fields=["shelf", "position"])
+
+        return book
+
+
+class AddByISBNForm(BookSaveMixin, forms.ModelForm):
     class Meta:
         model = Book
         fields = ("shelf", "isbn")
@@ -44,15 +57,6 @@ class AddByISBNForm(forms.ModelForm):
 
         self.book = book
 
-    def save(self):
-        book = create_book_object_from_pydantic(self.book)
-        book.shelf = self.cleaned_data["shelf"]
-        book.position = book.shelf.get_next_position()
-
-        book.save(update_fields=["shelf", "position"])
-
-        return book
-
 
 class ManualEntryForm(forms.ModelForm):
     class Meta:
@@ -60,7 +64,7 @@ class ManualEntryForm(forms.ModelForm):
         fields = ("shelf", "title", "authors", "isbn", "publication_year")
 
 
-class AddByURLForm(forms.Form):
+class AddByURLForm(BookSaveMixin, forms.Form):
     url = forms.URLField()
     shelf = forms.ModelChoiceField(queryset=BookShelf.objects.all(), required=False)
 
@@ -76,15 +80,6 @@ class AddByURLForm(forms.Form):
             raise ValidationError({"url": "Could not fetch book data from this URL."})
 
         self.book = book
-
-    def save(self):
-        book = create_book_object_from_pydantic(self.book)
-        book.shelf = self.cleaned_data["shelf"]
-        book.position = book.shelf.get_next_position()
-
-        book.save(update_fields=["shelf", "position"])
-
-        return book
 
 
 class BookcaseCreateForm(forms.ModelForm):
