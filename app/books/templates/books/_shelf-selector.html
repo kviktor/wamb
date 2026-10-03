@@ -41,11 +41,13 @@
 </dialog>
 
 <script>
-    const {{ prefix }}Button = document.getElementById("{{ prefix }}-btn");
-    const {{ prefix }}Value = document.getElementById("{{ prefix }}-value");
-    const {{ prefix }}Display = document.getElementById("{{ prefix }}-display");
-
+    /* the variables look reusable but they aren't because when htmx tries to add
+     * them to the page again it fails because they have been already declared */
     function selectionCallback(name, cell) {
+        const {{ prefix }}Button = document.getElementById("{{ prefix }}-btn");
+        const {{ prefix }}Value = document.getElementById("{{ prefix }}-value");
+        const {{ prefix }}Display = document.getElementById("{{ prefix }}-display");
+
         // use setAttribute instead of toggleAttribute because of `Select another` button
         {{ prefix }}Button.parentNode.parentNode.setAttribute("hidden", "");
 
@@ -54,6 +56,10 @@
         {{ prefix }}Display.parentNode.parentNode.removeAttribute("hidden");
     }
     function clearCallback() {
+        const {{ prefix }}Button = document.getElementById("{{ prefix }}-btn");
+        const {{ prefix }}Value = document.getElementById("{{ prefix }}-value");
+        const {{ prefix }}Display = document.getElementById("{{ prefix }}-display");
+
         {{ prefix }}Value.value = "";
         {{ prefix }}Button.parentNode.parentNode.removeAttribute("hidden");
         {{ prefix }}Display.parentNode.parentNode.setAttribute("hidden", "");

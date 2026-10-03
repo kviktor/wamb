@@ -244,6 +244,7 @@ class ShelfSelector {
 
                 li.append(icon, result.name);
                 li.dataset.id = result.id;
+                li.dataset.name = result.name;
                 li.dataset.config = JSON.stringify(result.shelves_config);
 
                 li.addEventListener("click", (event) => {
@@ -263,7 +264,7 @@ class ShelfSelector {
     }
 
     onResultClick(event) {
-        this.bookcaseName = event.target.innerText;
+        this.bookcaseName = event.target.dataset.name;
         const bookcase = new Bookcase(
             this.results,
             JSON.parse(event.target.dataset.config),
