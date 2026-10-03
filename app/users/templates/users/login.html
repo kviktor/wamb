@@ -31,6 +31,11 @@
                 <div class="space"></div>
                 <button class="responsive">Login</button>
             </form>
-        </div>
-    </article>
+            <form method="post" action="{% url 'social:begin' 'google-oauth2' %}">
+                {% csrf_token %}
+                <div class="center-align">
+                    {% include "_google-button.html" %}
+                </div>
+            </form>
+        </article>
 {% endblock content %}

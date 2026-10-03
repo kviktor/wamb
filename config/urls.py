@@ -14,6 +14,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("app.books.urls")),
     path("", include("app.users.urls")),
+    path("", include("social_django.urls", namespace="social")),
 ]
 
 if settings.SERVE_MEDIA_FILES:

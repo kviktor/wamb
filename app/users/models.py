@@ -6,9 +6,22 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_superuser(self, email, password):
-        user = self.model(email=email, username=email, is_staff=True, is_superuser=True)
+    def create_user(self, email, username, password=None):
+        user = self.model(email=email, username=email)
         user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, password):
+        user = self.model(
+            email=email,
+            username=email,
+            password=password,
+            is_staff=True,
+            is_superuser=True,
+        )
+        user.is_staff = True
+        user.is_superuser = True
         user.save(using=self._db)
         return user
 

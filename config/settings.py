@@ -54,7 +54,10 @@ DJANGO_APPS = [
     "django.contrib.staticfiles",
 ]
 
-THIRD_PARTY_APPS = ["django_htmx"]
+THIRD_PARTY_APPS = [
+    "django_htmx",
+    "social_django",
+]
 
 LOCAL_APPS = [
     "app.users",
@@ -163,6 +166,7 @@ MEDIA_URL = "media/"
 # Custom user model
 AUTH_USER_MODEL = "users.User"
 LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "index"
 
 # if set to true download images (author and book cover), otherwise hotlink
 DOWNLOAD_IMAGES = env.bool("DOWNLOAD_IMAGES", default=False)
@@ -190,3 +194,13 @@ if "test" in sys.argv:
     STORAGES["staticfiles"]["BACKEND"] = "django.core.files.storage.FileSystemStorage"
     # in-memory database for tests
     DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
+
+
+# Python Social Auth configuration
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env.str("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", default="")
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env.str("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET", default="")
+
+AUTHENTICATION_BACKENDS = (
+    "social_core.backends.google.GoogleOAuth2",
+    "django.contrib.auth.backends.ModelBackend",
+)
