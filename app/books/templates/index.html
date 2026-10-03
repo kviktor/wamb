@@ -11,7 +11,7 @@
             </p>
             <p>
                 Latest books:
-                <ul class="padding">
+                <ul class="left-padding">
                     {% for book in latest_books %}
                         <li>
                             <a href="{% url "book-detail" pk=book.pk %}">
