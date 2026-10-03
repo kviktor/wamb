@@ -27,7 +27,7 @@ class AuthorAdmin(admin.ModelAdmin):
 
 @admin.register(Bookcase)
 class BookcaseAdmin(admin.ModelAdmin):
-    pass
+    list_display = ("name", "rows", "columns")
 
 
 @admin.register(BookShelf)
