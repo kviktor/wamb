@@ -6,8 +6,8 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, username, password=None):
-        user = self.model(email=email, username=email)
+    def create_user(self, email, username, password=None, **kwargs):
+        user = self.model(email=email, username=email, **kwargs)
         user.set_password(password)
         user.save(using=self._db)
         return user
@@ -30,5 +30,9 @@ class User(AbstractUser):
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
     email = models.EmailField(unique=True)
+
+    can_view = models.BooleanField(default=False)
+    can_change = models.BooleanField(default=False)
+    can_manage_users = models.BooleanField(default=False)
 
     objects = UserManager()

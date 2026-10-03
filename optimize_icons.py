@@ -18,6 +18,7 @@ icon_names = {
     "auto_stories",  # has some extra classes
     "photo",  # these 2 are from Python
     "table",
+    "check",
 }
 for template in templates:
     with open(template) as f:

@@ -1,0 +1,58 @@
+{% extends "books/base.html" %}
+{% load static %}
+
+{% block title %}Add new user{% endblock %}
+
+{% block content %}
+    <article>
+        <h3>
+            Add a new user
+        </h3>
+
+        <form method="post">
+            {% csrf_token %} {% if form.errors %}
+                <div class="error-text padding">
+                    <i>error</i>
+                    <span>Please correct the errors below</span>
+                </div>
+            {% endif %}
+
+            <div class="grid">
+                <div class="field label border s12 {% if form.email.errors %}invalid{% endif %}">
+                    {{ form.email }}
+                    <label>Email</label>
+                    {% if form.email.errors %}
+                        <output class="invalid">{{ form.email.errors.0 }}</output>
+                    {% endif %}
+                </div>
+
+                <div class="field label border s12 m6">
+                    {{ form.first_name }}
+                    <label>First name</label>
+                    {% if form.name.errors %}
+                        <span class="invalid">{{ form.first_name.errors.0 }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="field label border s12 m6">
+                    {{ form.last_name }}
+                    <label>Last name</label>
+                    {% if form.name.errors %}
+                        <span class="invalid">{{ form.last_name.errors.0 }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <nav>
+                <button type="submit" class="button">
+                    <i>save</i>
+                    <span>Save</span>
+                </button>
+                <a href="{% url 'user-list' %}" class="button border">
+                    <i>cancel</i>
+                    <span>Cancel</span>
+                </a>
+            </nav>
+        </form>
+    </article>
+{% endblock content %}

@@ -3,25 +3,33 @@
 {% block content %}
     <article class="padding">
         <div class="no-padding">
-            <h3>Welcome</h3>
+            <h3>
+                <i>waving_hand</i>
+                Welcome
+            </h3>
         </div>
         <div>
-            <p>
-                We have {{ total_number_of_books }} books.
-            </p>
-            <p>
-                Latest books:
-                <ul class="left-padding">
-                    {% for book in latest_books %}
-                        <li>
-                            <a href="{% url "book-detail" pk=book.pk %}">
-                                {{ book }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </p>
-
+            {% if user.can_view %}
+                <p>
+                    We have {{ total_number_of_books }} books.
+                </p>
+                <p>
+                    Latest books:
+                    <ul class="left-padding">
+                        {% for book in latest_books %}
+                            <li>
+                                <a href="{% url "book-detail" pk=book.pk %}">
+                                    {{ book }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </p>
+            {% else %}
+                <p>
+                    You don't have permissions to view anything.
+                </p>
+            {% endif %}
         </div>
     </article>
 {% endblock content %}

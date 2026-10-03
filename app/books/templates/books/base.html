@@ -12,22 +12,26 @@
             <i>home</i>
             <div>Home</div>
         </a>
-        <a href="{% url 'book-list' %}">
-            <i>book_2</i>
-            <div>Books</div>
-        </a>
-        <a href="{% url 'bookcase-list' %}">
-            <i>shelves</i>
-            <div>Bookcases</div>
-        </a>
-        <a href="{% url 'author-list' %}">
-            <i>person_search</i>
-            <div>Authors</div>
-        </a>
-        <a class="absolute bottom">
-            <i>account_circle</i>
-            <div>User</div>
-        </a>
+        {% if user.can_view %}
+            <a href="{% url 'book-list' %}">
+                <i>book_2</i>
+                <div>Books</div>
+            </a>
+            <a href="{% url 'bookcase-list' %}">
+                <i>shelves</i>
+                <div>Bookcases</div>
+            </a>
+            <a href="{% url 'author-list' %}">
+                <i>person_search</i>
+                <div>Authors</div>
+            </a>
+        {% endif %}
+        {% if user.can_manage_users %}
+            <a href="{% url 'user-list' %}">
+                <i>group</i>
+                <div>Users</div>
+            </a>
+        {% endif %}
     </nav>
 
     <nav class="left m">
@@ -38,22 +42,26 @@
             <i>home</i>
             <div>Home</div>
         </a>
-        <a href="{% url 'book-list' %}">
-            <i>book_2</i>
-            <div>Books</div>
-        </a>
-        <a href="{% url 'bookcase-list' %}">
-            <i>shelves</i>
-            <div>Bookcases</div>
-        </a>
-        <a href="{% url 'author-list' %}">
-            <i>person_search</i>
-            <div>Authors</div>
-        </a>
-        <a class="absolute bottom">
-            <i>account_circle</i>
-            <div>User</div>
-        </a>
+        {% if user.can_view %}
+            <a href="{% url 'book-list' %}">
+                <i>book_2</i>
+                <div>Books</div>
+            </a>
+            <a href="{% url 'bookcase-list' %}">
+                <i>shelves</i>
+                <div>Bookcases</div>
+            </a>
+            <a href="{% url 'author-list' %}">
+                <i>person_search</i>
+                <div>Authors</div>
+            </a>
+        {% endif %}
+        {% if user.can_manage_users %}
+            <a href="{% url 'user-list' %}">
+                <i>group</i>
+                <div>Users</div>
+            </a>
+        {% endif %}
     </nav>
 
     <nav class="bottom s">
@@ -61,17 +69,19 @@
             <i>home</i>
             <div>Home</div>
         </a>
-        <a href="{% url 'book-list' %}">
-            <i>book_2</i>
-            <div>Books</div>
-        </a>
-        <a href="{% url 'bookcase-list' %}">
-            <i>shelves</i>
-            <div>Bookcases</div>
-        </a>
-        <a href="{% url 'author-list' %}">
-            <i>person_search</i>
-            <div>Authors</div>
-        </a>
+        {% if user.can_view %}
+            <a href="{% url 'book-list' %}">
+                <i>book_2</i>
+                <div>Books</div>
+            </a>
+            <a href="{% url 'bookcase-list' %}">
+                <i>shelves</i>
+                <div>Bookcases</div>
+            </a>
+            <a href="{% url 'author-list' %}">
+                <i>person_search</i>
+                <div>Authors</div>
+            </a>
+        {% endif %}
     </nav>
 {% endblock nav %}

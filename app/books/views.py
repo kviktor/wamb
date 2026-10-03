@@ -15,6 +15,8 @@ from django.views.generic import (
     UpdateView,
 )
 
+from app.users.permissions import PermissionMixin
+
 from .forms import (
     AddByISBNForm,
     AddByURLForm,
@@ -27,7 +29,6 @@ from .models import (
     Bookcase,
     BookShelf,
 )
-from .permissions import PermissionMixin
 from .utils import get_int_or_default
 
 
@@ -282,10 +283,9 @@ class BookDeleteView(PermissionMixin, DeleteView):
 
 
 def autocomplete(request):
-    if not request.user.is_authenticated:
+    if not (request.user.is_authenticated and request.user.can_view):
         raise PermissionDenied
 
-    # TOOD permission check based on selected mapping
     mapping = {
         "bookcase": {
             "queryset": Bookcase.objects.prefetch_related(
@@ -318,7 +318,7 @@ def autocomplete(request):
 @csrf_exempt
 @permission_required("books.add_book")
 def add_by_isbn_api_view(request):
-    if not request.user.is_authenticated:
+    if not (request.user.is_authenticated and request.user.can_change):
         raise PermissionDenied
 
     form = AddByISBNForm(request.POST)

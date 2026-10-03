@@ -1,0 +1,129 @@
+{% extends 'books/base.html' %}
+
+{% block title %}{{ user.email }}{% endblock %}
+
+{% block content %}
+    <article class="padding">
+        <div class="no-padding">
+            <h2>
+                <a href="{% url 'user-list' %}" class="button border large">
+                    <i>arrow_back</i>
+                </a>
+                {{ user.email }}
+            </h2>
+        </div>
+        <div class="grid">
+            {% partialdef update-section inline %}
+                <div class="s12 l7">
+                    <form
+                        method="post"
+                        action="{% url 'user-update' pk=user.pk %}"
+                        hx-post="{% url 'user-update' pk=user.pk %}"
+                        hx-swap="outerHTML"
+                    >
+                        <div class="grid">
+                            <div class="field label border s12 m6">
+                                {{ update_form.first_name }}
+                                <label>First name</label>
+                                {% if update_form.name.errors %}
+                                    <output class="invalid">{{ update_form.first_name.errors.0 }}</output>
+                                {% endif %}
+                            </div>
+                            <div class="field label border s12 m6">
+                                {{ update_form.last_name }}
+                                <label>Last name</label>
+                                {% if form.name.errors %}
+                                    <output class="invalid">{{ update_form.last_name.errors.0 }}</output>
+                                {% endif %}
+                            </div>
+
+                            <div class="field middle-align s12">
+                                <nav>
+                                    <div class="max">
+                                        <h6><i>visibility</i></h6>
+                                        <div>Grant view access for the user to all the objects except users.</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" {% if update_form.can_view.value %}checked{% endif %} name="can_view">
+                                        <span></span>
+                                    </label>
+                                </nav>
+                            </div>
+                            <div class="field middle-align s12">
+                                <nav>
+                                    <div class="max">
+                                        <h6><i>edit</i></h6>
+                                        <div>Grant edit access for hte user to all objects except the users.</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" {% if update_form.can_change.value %}checked{% endif %} name="can_change">
+                                        <span></span>
+                                    </label>
+                                </nav>
+                            </div>
+                            <div class="field middle-align s12">
+                                <nav>
+                                    <div class="max">
+                                        <h6><i>group</i></h6>
+                                        <div>Allow the user to manage (view, create, change, delete) all other users.</div>
+                                    </div>
+                                    <label class="switch">
+                                        <input type="checkbox" {% if update_form.can_manage_users.value %}checked{% endif %} name="can_manage_users">
+                                        <span></span>
+                                    </label>
+                                </nav>
+                            </div>
+                            <button type="submit" class="button">
+                                <i>save</i>
+                                <span>Save</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            {% endpartialdef update-section %}
+            {% partialdef password-section inline %}
+                <div class="l5 s12">
+                    <form
+                        method="post"
+                        action="{% url 'user-set-password' pk=user.pk %}"
+                        hx-post="{% url 'user-set-password' pk=user.pk %}"
+                        hx-swap="outerHTML"
+                    >
+                        <div>
+                            The user currently has
+                            {% if user.has_usable_password %} a {% else %} no {% endif %}
+                            password set.
+                        </div>
+
+                        {{ password_form.non_field_errors }}
+
+                        <div class="field label suffix border {% if password_form.new_password1.errors %}invalid{% endif %}">
+                            <input type="password" name="new_password1">
+                            <label>New password</label>
+                            <i class="front">visibility</i>
+                            <output>{{ password_form.new_password1.help_text }}</output>
+                            {% if password_form.new_password1.errors %}
+                                <output class="invalid">{{ password_form.new_password1.errors.0 }}</output>
+                            {% endif %}
+                        </div>
+                        <div class="field label suffix border {% if password_form.new_password2.errors %}invalid{% endif %}">
+                            <input type="password" name="new_password2">
+                            <label>New password</label>
+                            <i class="front">visibility</i>
+                            <output>{{ password_form.new_password2.help_text }}</output>
+                            {% if password_form.new_password2.errors %}
+                                <output class="invalid">{{ password_form.new_password2.errors.0 }}</output>
+                            {% endif %}
+                        </div>
+                        <div class="field">
+                            <button type="submit" class="button">
+                                <i>key</i>
+                                <span>Set password</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            {% endpartialdef password-section %}
+        </div>
+    </article>
+{% endblock content %}

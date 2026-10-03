@@ -9,15 +9,17 @@
                 <i>arrow_back</i>
                 <span>Back to List</span>
             </a>
-            <div class="max"></div>
-            <a href="{% url 'book-update' book.pk %}" class="button">
-                <i>edit</i>
-                <span>Edit</span>
-            </a>
-            <a href="{% url 'book-delete' book.pk %}" class="button">
-                <i>delete</i>
-                <span>Delete</span>
-            </a>
+            {% if request.user.can_change %}
+                <div class="max"></div>
+                <a href="{% url 'book-update' book.pk %}" class="button">
+                    <i>edit</i>
+                    <span>Edit</span>
+                </a>
+                <a href="{% url 'book-delete' book.pk %}" class="button">
+                    <i>delete</i>
+                    <span>Delete</span>
+                </a>
+            {% endif %}
         </nav>
 
         <h3>{{ book.title }}</h3>

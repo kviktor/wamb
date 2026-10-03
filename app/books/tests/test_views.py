@@ -8,7 +8,9 @@ class SanityTest(TestCase):
     """quick test so all pages render"""
 
     def test_pages(self):
-        user = baker.make("users.User", is_superuser=True)
+        user = baker.make(
+            "users.User", can_view=True, can_change=True, can_manage_users=True
+        )
         bookcase = baker.make("books.Bookcase", rows=1, columns=1)
         author = baker.make("books.Author")
         book = baker.make("books.Book")
@@ -31,6 +33,9 @@ class SanityTest(TestCase):
             reverse("author-list"),
             reverse("author-create"),
             reverse("author-detail", kwargs={"pk": author.pk}),
+            reverse("user-list"),
+            reverse("user-create"),
+            reverse("user-detail", kwargs={"pk": user.pk}),
         ]
 
         for url in urls:

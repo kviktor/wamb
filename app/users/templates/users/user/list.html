@@ -1,0 +1,44 @@
+{% extends 'books/base.html' %}
+
+{% block title %}Users{% endblock %}
+
+{% block content %}
+    <article class="padding">
+        <div class="no-padding">
+            <h3>
+                <i>group</i>
+                Users
+                <a href="{% url 'user-create' %}" class="button right absolute">
+                    <i>add</i>
+                    <span class="max m l">Add new user</span>
+                </a>
+            </h3>
+        </div>
+
+
+        <div>
+            <table class="border stripes">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th><i>visibility</i></button><span class="tooltip">Can view</span></th>
+                    <th><i>edit</i></button><span class="tooltip">Can change</span></th>
+                <th><i>group</i></button><span class="tooltip">Can manage users</span></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+            <tr>
+                <td><a href="{% url "user-detail" pk=user.pk %}">{{ user.email }}</a></td>
+                <td>{{ user.first_name }} {{ user.last_name }}</td>
+                <td><i>{{ user.can_view|yesno:"check,close" }}</i></td>
+                <td><i>{{ user.can_change|yesno:"check,close" }}</i></td>
+                <td><i>{{ user.can_manage_users|yesno:"check,close" }}</i></td>
+            </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+    </div>
+    </article>
+{% endblock content %}

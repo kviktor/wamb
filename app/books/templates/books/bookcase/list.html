@@ -6,10 +6,13 @@
             <h3>
                 <i>shelves</i>
                 Bookcases
-                <a href="{% url 'bookcase-create' %}" class="button right absolute">
-                    <i>add</i>
-                    <span class="max l m">Add New Bookcase</span>
-                </a>
+
+                {% if request.user.can_change %}
+                    <a href="{% url 'bookcase-create' %}" class="button right absolute">
+                        <i>add</i>
+                        <span class="max l m">Add New Bookcase</span>
+                    </a>
+                {% endif %}
             </h3>
         </div>
 

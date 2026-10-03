@@ -1,44 +1,47 @@
 {% extends "base.html" %}
 
 {% block content %}
-
-    <article class="small-round padding border medium no-padding">
-        <div class="padding absolute middle center">
-            <h5>Login</h5>
-            <div class="space"></div>
-
-            <form method="POST" action="">
-                {% csrf_token %}
-                {% if form.non_field_errors %}
-                    <div class="white-text red8">{{ form.non_field_errors.0 }}</div>
-                {% endif %}
-
-                <div class="field label suffix border small {% if form.username.errors %}invalid{% endif %}">
-                    <input type="text" autofocus autocomplete="username" name="username">
-                    <label>Email</label>
-                    {% if form.username.errors %}
-                        <output class="invalid">{{ form.username.errors.0 }}</output>
-                    {% endif %}
-                </div>
-                <div class="field label suffix border small {% if form.password.errors %}invalid{% endif %}">
-                    <input type="password" autocomplete="current-password" name="password">
-                    <label>Password</label>
-                    <i class="front">visibility</i>
-                    {% if form.password.errors %}
-                        <output class="invalid">{{ form.password.errors.0 }}</output>
-                    {% endif %}
-                </div>
+    <article class="small-round padding border no-padding middle center">
+        <div class="grid padding">
+            <div class="s1 m3 l4"></div>
+            <div class="s10 m6 l4">
+                <h5>Login</h5>
                 <div class="space"></div>
-                <button class="responsive">Login</button>
-            </form>
 
-            {% if is_social_django_enabled %}
-                <form method="post" action="{% url 'social:begin' 'google-oauth2' %}">
+                <form method="POST" action="">
                     {% csrf_token %}
-                    <div class="center-align">
-                        {% include "_google-button.html" %}
+                    {% if form.non_field_errors %}
+                        <div class="white-text red8">{{ form.non_field_errors.0 }}</div>
+                    {% endif %}
+
+                    <div class="field label suffix border small {% if form.username.errors %}invalid{% endif %}">
+                        <input type="text" autofocus autocomplete="username" name="username">
+                        <label>Email</label>
+                        {% if form.username.errors %}
+                            <output class="invalid">{{ form.username.errors.0 }}</output>
+                        {% endif %}
                     </div>
+                    <div class="field label suffix border small {% if form.password.errors %}invalid{% endif %}">
+                        <input type="password" autocomplete="current-password" name="password">
+                        <label>Password</label>
+                        <i class="front">visibility</i>
+                        {% if form.password.errors %}
+                            <output class="invalid">{{ form.password.errors.0 }}</output>
+                        {% endif %}
+                    </div>
+                    <div class="space"></div>
+                    <button class="responsive">Login</button>
                 </form>
-            {% endif %}
-        </article>
+
+                {% if is_social_django_enabled %}
+                    <form method="post" action="{% url 'social:begin' 'google-oauth2' %}">
+                        {% csrf_token %}
+                        <div class="center-align">
+                            {% include "_google-button.html" %}
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </article>
 {% endblock content %}
