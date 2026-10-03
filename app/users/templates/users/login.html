@@ -31,11 +31,14 @@
                 <div class="space"></div>
                 <button class="responsive">Login</button>
             </form>
-            <form method="post" action="{% url 'social:begin' 'google-oauth2' %}">
-                {% csrf_token %}
-                <div class="center-align">
-                    {% include "_google-button.html" %}
-                </div>
-            </form>
+
+            {% if is_social_django_enabled %}
+                <form method="post" action="{% url 'social:begin' 'google-oauth2' %}">
+                    {% csrf_token %}
+                    <div class="center-align">
+                        {% include "_google-button.html" %}
+                    </div>
+                </form>
+            {% endif %}
         </article>
 {% endblock content %}

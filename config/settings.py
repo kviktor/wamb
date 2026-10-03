@@ -56,7 +56,6 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = [
     "django_htmx",
-    "social_django",
 ]
 
 LOCAL_APPS = [
@@ -200,7 +199,9 @@ if "test" in sys.argv:
 SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = env.str("SOCIAL_AUTH_GOOGLE_OAUTH2_KEY", default="")
 SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = env.str("SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET", default="")
 
-AUTHENTICATION_BACKENDS = (
-    "social_core.backends.google.GoogleOAuth2",
-    "django.contrib.auth.backends.ModelBackend",
-)
+if SOCIAL_AUTH_GOOGLE_OAUTH2_KEY and SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET:
+    INSTALLED_APPS += ["social_django"]
+    AUTHENTICATION_BACKENDS = (
+        "social_core.backends.google.GoogleOAuth2",
+        "django.contrib.auth.backends.ModelBackend",
+    )
