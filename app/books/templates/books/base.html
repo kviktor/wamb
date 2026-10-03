@@ -12,7 +12,7 @@
             <i>home</i>
             <div>Home</div>
         </a>
-        {% if user.can_view %}
+        {% if request.user.can_view %}
             <a href="{% url 'book-list' %}">
                 <i>book_2</i>
                 <div>Books</div>
@@ -26,7 +26,7 @@
                 <div>Authors</div>
             </a>
         {% endif %}
-        {% if user.can_manage_users %}
+        {% if request.user.can_manage_users %}
             <a href="{% url 'user-list' %}">
                 <i>group</i>
                 <div>Users</div>
@@ -42,7 +42,7 @@
             <i>home</i>
             <div>Home</div>
         </a>
-        {% if user.can_view %}
+        {% if request.user.can_view %}
             <a href="{% url 'book-list' %}">
                 <i>book_2</i>
                 <div>Books</div>
@@ -56,7 +56,7 @@
                 <div>Authors</div>
             </a>
         {% endif %}
-        {% if user.can_manage_users %}
+        {% if request.user.can_manage_users %}
             <a href="{% url 'user-list' %}">
                 <i>group</i>
                 <div>Users</div>
@@ -69,7 +69,7 @@
             <i>home</i>
             <div>Home</div>
         </a>
-        {% if user.can_view %}
+        {% if request.user.can_view %}
             <a href="{% url 'book-list' %}">
                 <i>book_2</i>
                 <div>Books</div>
