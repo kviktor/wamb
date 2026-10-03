@@ -1,5 +1,13 @@
 [hidden] { display: none !important; }
 
+.results .scroll {
+    max-height: 40vh;
+}
+
+dialog button.listing {
+    margin-bottom: 10px;
+}
+
 :root,
 body.light {
     --primary:#9a4522;

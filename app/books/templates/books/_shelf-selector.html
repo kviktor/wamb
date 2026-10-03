@@ -22,7 +22,8 @@
 
 <input type="hidden" name="shelf" id="{{ prefix }}-value" {% if field.value %}value="{{ field.value }}"{% endif %}/>
 
-<dialog class="top" id="{{ prefix }}-dialog">
+<div class="overlay" id="{{ prefix }}-overlay"></div>
+<dialog class="top" id="{{ prefix }}-dialog" closedby="any">
     <div class="field label prefix border round">
         <i>search</i>
         <input type="text" id="{{ prefix }}-bookcase-search">
@@ -30,6 +31,8 @@
     </div>
 
     <div class="space"></div>
+
+    <button class="chip listing" hidden><i>arrow_back</i>back</button>
 
     <div class="results"></div>
     <nav class="right-align">

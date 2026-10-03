@@ -144,8 +144,12 @@ class ShelfSelector {
         this.another = document.getElementById(`${prefix}-another`);
         this.clear  = document.getElementById(`${prefix}-clear`);
         this.dialog = document.getElementById(`${prefix}-dialog`);
+        const cancelButton = this.dialog.getElementsByClassName("cancel")[0];
+        this.listingButton = this.dialog.getElementsByClassName("listing")[0];
+        this.overlay = document.getElementById(`${prefix}-overlay`);
         this.search = document.getElementById(`${prefix}-bookcase-search`);
         this.results = this.dialog.getElementsByClassName("results")[0];
+        this.latestResults = [];
 
         this.selectionCallback = selectionCallback;
         this.clearCallback = clearCallback;
@@ -154,12 +158,12 @@ class ShelfSelector {
 
         this.button.addEventListener("click", (e) => {
             e.preventDefault();
-            this.dialog.showModal();
+            this.openDialog();
         });
 
         this.another.addEventListener("click", (e) => {
             e.preventDefault();
-            this.dialog.showModal();
+            this.openDialog();
         });
 
         this.clear.addEventListener("click", (e) => {
@@ -168,16 +172,29 @@ class ShelfSelector {
             this.clearCallback();
         });
 
+        this.dialog.addEventListener("close", (e) => {
+            this.overlay.classList.remove("active");
+        });
+
+
         this.search.addEventListener("input", (e) => {
             this.handleSearch(this.search.value);
         });
 
-        this.dialog
-            .getElementsByClassName("cancel")[0]
-            .addEventListener("click", (e) => {
-                e.preventDefault();
-                this.dialog.close();
-            });
+        cancelButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.closeDialog();
+        });
+
+        this.listingButton.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.createResultsList(this.latestResults);
+        });
+
+        this.overlay.addEventListener("click", (e) => {
+            this.closeDialog();
+        });
+
 
         const recent = document.getElementById("recent-bookcases");
         if(recent) {
@@ -203,21 +220,35 @@ class ShelfSelector {
         }
     }
 
+    openDialog() {
+        this.dialog.showModal();
+        this.overlay.classList.add("active");
+    }
+
+    closeDialog() {
+        this.dialog.close();
+    }
+
     createResultsList(data) {
         const element = document.createElement("div");
+        element.classList.add("scroll");
 
         if (data.results.length > 0) {
             const ul = document.createElement("ul");
             ul.classList.add("list", "border");
             for (const result of data.results) {
                 const li = document.createElement("li");
-                li.appendChild(document.createTextNode(result.name));
+
+                const icon = document.createElement("i");
+                icon.textContent = "shelves";
+
+                li.append(icon, result.name);
                 li.dataset.id = result.id;
                 li.dataset.config = JSON.stringify(result.shelves_config);
 
-                ul.addEventListener("click", (event) =>
-                    this.onResultClick(event),
-                );
+                li.addEventListener("click", (event) => {
+                    this.onResultClick(event);
+                });
 
                 ul.appendChild(li);
             }
@@ -227,6 +258,8 @@ class ShelfSelector {
         }
 
         this.results.replaceChildren(element);
+        this.latestResults = data;
+        this.listingButton.setAttribute("hidden", "");
     }
 
     onResultClick(event) {
@@ -239,6 +272,7 @@ class ShelfSelector {
             this.onShelfClick(payload),
         );
         bookcase.draw();
+        this.listingButton.removeAttribute("hidden");
     }
 
     onShelfClick(payload) {
