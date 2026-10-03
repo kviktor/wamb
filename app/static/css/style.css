@@ -1,3 +1,5 @@
+[hidden] { display: none !important; }
+
 :root,
 body.light {
     --primary:#9a4522;

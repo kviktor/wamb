@@ -133,19 +133,24 @@
                 <div class="space"></div>
 
                 <div class="grid">
-                    <div class="s6 m2 field">
+                    <div class="s12">
+                        <div class="field label border">
+                            {% include "books/_shelf-selector.html" with prefix="scan" field=url_form.shelf %}
+                        </div>
+                    </div>
+                    <div class="s6 m3 field">
                         <button id="startScan">
                             <i>photo_camera</i>
                             Start
                         </button>
                     </div>
-                    <div class="s6 m2 field">
+                    <div class="s6 m3 field">
                         <button id="stopScan">
                             <i>stop</i>
                             Stop
                         </button>
                     </div>
-                    <div class="s12 m8">
+                    <div class="s12 m6">
                         <div class="field border label">
                             <select id="camera">
                                 <option value="">Select a camera...</option>
@@ -160,7 +165,14 @@
 
                 <div class="snackbar primary" id="feedback" popover>Some text here</div>
 
-                <div id="interactive" class="viewport">Click Start to start scanning.</div>
+                <div id="interactive" class="viewport">
+                    <p>
+                        Click Start to start scanning.
+                    </p>
+                    <p>
+                        If no video feed appears then try choosing a different camera in the dropdown.
+                    </p>
+                </div>
             {% endpartialdef scan-section %}
         </div>
 

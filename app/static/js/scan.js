@@ -4,8 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const interactive = document.getElementById("interactive");
     const cameraSelect = document.getElementById("camera");
     const feedback = document.getElementById("feedback");
+    const shelfInput = document.getElementById("scan-value");
+    const interactiveHelpText = Array.from(interactive.children);
     let selectedDeviceId = null;
-    const seenCodes = new Set();
 
     function startScan() {
         interactive.replaceChildren();
@@ -50,7 +51,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function stopScan() {
         Quagga.stop();
-        interactive.replaceChildren("Click Start to start scanning.");
+        interactive.replaceChildren(...interactiveHelpText);
         stopBtn.disabled = true;
         startBtn.disabled = false;
     }
@@ -125,6 +126,10 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
             const form = new FormData();
             form.append("isbn", isbn);
+
+            if(shelfInput.value) {
+                form.append("shelf", shelfInput.value);
+            }
 
             const response = await fetch("/isbn/", {
                 method: "POST",

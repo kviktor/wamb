@@ -139,14 +139,16 @@ class Bookcase {
 }
 
 class ShelfSelector {
-    constructor(prefix, callback) {
+    constructor(prefix, selectionCallback, clearCallback) {
         this.button = document.getElementById(`${prefix}-btn`);
         this.another = document.getElementById(`${prefix}-another`);
+        this.clear  = document.getElementById(`${prefix}-clear`);
         this.dialog = document.getElementById(`${prefix}-dialog`);
         this.search = document.getElementById(`${prefix}-bookcase-search`);
         this.results = this.dialog.getElementsByClassName("results")[0];
 
-        this.callback = callback;
+        this.selectionCallback = selectionCallback;
+        this.clearCallback = clearCallback;
 
         this.bookcaseName = "";
 
@@ -158,6 +160,12 @@ class ShelfSelector {
         this.another.addEventListener("click", (e) => {
             e.preventDefault();
             this.dialog.showModal();
+        });
+
+        this.clear.addEventListener("click", (e) => {
+            e.preventDefault();
+            this.bookcaseName = "";
+            this.clearCallback();
         });
 
         this.search.addEventListener("input", (e) => {
@@ -234,7 +242,7 @@ class ShelfSelector {
     }
 
     onShelfClick(payload) {
-        this.callback(this.bookcaseName, payload.cell);
+        this.selectionCallback(this.bookcaseName, payload.cell);
         payload.bookcase.clearSelections();
         this.dialog.close();
     }
