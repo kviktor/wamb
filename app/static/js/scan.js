@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const shelfInput = document.getElementById("scan-value");
     const interactiveHelpText = Array.from(interactive.children);
     let selectedDeviceId = null;
+    const seenCodes = new Set();
 
     function startScan() {
         interactive.replaceChildren();
