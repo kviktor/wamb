@@ -1,9 +1,10 @@
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db import models
 
 
 class ISBNLookup(models.Model):
     isbn = models.CharField(max_length=13, unique=True)
-    serialized_data = models.JSONField()
+    serialized_data = models.JSONField(encoder=DjangoJSONEncoder)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
