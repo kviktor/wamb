@@ -18,7 +18,9 @@ icon_names = {
     "auto_stories",  # has some extra classes
     "photo",  # these 2 are from Python
     "table",
-    "check",
+    "check",  # scan.js + yesno filter
+    "close",
+    "dangerous",  # scan.js
 }
 for template in templates:
     with open(template) as f:
