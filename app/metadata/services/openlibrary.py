@@ -1,3 +1,5 @@
+from datetime import date, datetime
+
 from app.metadata.models import Service
 from app.metadata.services.base import AuthorMetadata, BookMetadata
 from app.metadata.services.client import Client
@@ -40,13 +42,30 @@ def get_olid(olid):
     return olid.split("/")[-1]
 
 
+def parse_date(raw_data: str) -> date | None:
+    """tries to parse dates like `31 July 1965` but that format is not guaranteed"""
+    try:
+        return datetime.strptime(raw_data, "%d %B %Y").date()
+    except ValueError:
+        # as a fallback if it looks like a year let's try to use that
+        year = parse_year(raw_data)
+        if year:
+            return date(year, 1, 1)
+
+    return None
+
+
 def parse_year(raw_date: str) -> int | None:
     if not raw_date:
         return None
 
-    last_4 = raw_date[:-4]
+    last_4 = raw_date[-4:]
     if last_4.isdigit():
         return int(last_4)
+
+    first_4 = raw_date[:4]
+    if first_4.isdigit():
+        return int(first_4)
 
     return None
 
@@ -65,7 +84,7 @@ def get_book_by_isbn(isbn: str) -> BookMetadata | None:
         authors=[
             AuthorMetadata(
                 name=author_data["name"],
-                birth_date=parse_year(author_data.get("birth_date")),
+                birth_date=parse_date(author_data.get("birth_date")),
                 gender="",
                 country="",
                 third_party_data={
