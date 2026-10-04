@@ -42,11 +42,11 @@ def get_olid(olid):
     return olid.split("/")[-1]
 
 
-def parse_date(raw_data: str) -> date | None:
+def parse_date(raw_data: str | None) -> date | None:
     """tries to parse dates like `31 July 1965` but that format is not guaranteed"""
     try:
         return datetime.strptime(raw_data, "%d %B %Y").date()
-    except ValueError:
+    except ValueError, TypeError:
         # as a fallback if it looks like a year let's try to use that
         year = parse_year(raw_data)
         if year:

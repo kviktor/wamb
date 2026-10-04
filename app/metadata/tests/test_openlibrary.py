@@ -31,6 +31,7 @@ class ParseDateTest(TestCase):
             ("2010-10-10", date(2010, 1, 1)),
             ("08/08/2016", date(2016, 1, 1)),
             ("", None),
+            (None, None),
             ("aint int", None),
         ]
     )
