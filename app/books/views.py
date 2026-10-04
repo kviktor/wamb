@@ -78,6 +78,14 @@ class AuthorListView(PermissionMixin, ListView):
 
 class AuthorDetailView(PermissionMixin, DetailView):
     model = Author
+    queryset = Author.objects.all().prefetch_related(
+        Prefetch(
+            "books",
+            queryset=(
+                Book.objects.select_related("cover").order_by("publication_year", "pk")
+            ),
+        )
+    )
     template_name = "books/author/detail.html"
 
 
