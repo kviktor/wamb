@@ -14,8 +14,11 @@ class Client:
 
     def log_response(self, response, exc):
         if response:
-            if response.headers.get("Content-Type") in ("text/html", "application/json"):
+            content_type = response.headers.get("Content-Type", "")
+            if content_type in ("text/html", "application/json"):
                 response_content = response.text
+            elif content_type.startswith("image/"):
+                response_content = "/* raw image */"
             else:
                 response_content = str(response.content)
 
