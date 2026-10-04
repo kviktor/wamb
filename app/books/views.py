@@ -46,7 +46,12 @@ class IndexView(LoginRequiredMixin, TemplateView):
 
 class AuthorListView(PermissionMixin, ListView):
     model = Author
-    queryset = Author.objects.all().order_by("name")
+    queryset = (
+        Author.objects.all()
+        .select_related("image")
+        .only("id", "name", "image")
+        .order_by("name")
+    )
     template_name = "books/author/list.html"
     context_object_name = "authors"
     paginate_by = 20
@@ -106,9 +111,15 @@ class BookcaseDetailView(PermissionMixin, DetailView):
     queryset = Bookcase.objects.prefetch_related(
         Prefetch(
             "shelves",
-            queryset=BookShelf.objects.annotate(
-                book_count=Count("books"),
-            ).select_related("bookcase"),
+            queryset=(
+                BookShelf.objects.annotate(
+                    book_count=Count("books"),
+                )
+                .select_related("bookcase")
+                .prefetch_related(
+                    Prefetch("books", queryset=Book.objects.select_related("cover"))
+                )
+            ),
         ),
     )
 
@@ -136,7 +147,7 @@ class BookcaseDeleteView(PermissionMixin, DeleteView):
 
 class BookListView(PermissionMixin, ListView):
     model = Book
-    queryset = Book.objects.order_by("-created_at")
+    queryset = Book.objects.select_related("cover").order_by("-created_at")
     template_name = "books/book/list/index.html"
     context_object_name = "books"
     paginate_by = 20
@@ -172,12 +183,13 @@ class BookListView(PermissionMixin, ListView):
         )
 
         ctx["view_mode"] = {"table": "table"}.get(self.request.GET.get("view"), "cover")
-        ctx["bookcases"] = Bookcase.objects.all().order_by("name")
-        # only the selected author is rendered, the rest is searched via autocomplete
-        ctx["selected_author"] = Author.objects.filter(
-            pk=self.filter_data["author"]
-        ).first()
+        ctx["bookcases"] = Bookcase.objects.all().only("id", "name").order_by("name")
         ctx["filter_data"] = self.filter_data
+        # only the selected author is rendered, the rest is searched via autocomplete
+        if author := self.filter_data["author"]:
+            ctx["selected_author"] = Author.objects.filter(pk=author).first()
+        else:
+            ctx["selected_author"] = None
 
         return ctx
 
