@@ -3,6 +3,8 @@ import importlib
 
 from pydantic import BaseModel
 
+from django.conf import settings
+
 from app.metadata.models import ISBNLookup
 
 
@@ -94,10 +96,12 @@ def get_book_by_url(url: str) -> BookMetadata | None:
 def get_service_names() -> list[str]:
     from app.metadata.models import Service
 
+    valid_options = {s.name for s in Service}
+
     return [
-        Service.moly.name,
-        Service.openlibrary.name,
-        Service.google_books.name,
+        service_name
+        for service_name in settings.METADATA_SERVICE_ORDER
+        if service_name in valid_options
     ]
 
 

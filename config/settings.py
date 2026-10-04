@@ -205,3 +205,8 @@ if SOCIAL_AUTH_GOOGLE_OAUTH2_KEY and SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET:
         "social_core.backends.google.GoogleOAuth2",
         "django.contrib.auth.backends.ModelBackend",
     )
+
+
+METADATA_SERVICE_ORDER = env.list(
+    "METADATA_SERVICE_ORDER", default=["openlibrary", "google_books"]
+)
