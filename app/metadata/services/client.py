@@ -66,7 +66,8 @@ class Client:
             return self.request(method, url, retries=retries + 1, **kwargs)
         except httpx2.HTTPStatusError as exc:
             self.log_response(response, exc)
-            if exc.response.status_code >= 500:
+            status_code = exc.response.status_code
+            if status_code >= 500 or status_code == 429:
                 return self.request(method, url, retries=retries + 1, **kwargs)
 
         return None
