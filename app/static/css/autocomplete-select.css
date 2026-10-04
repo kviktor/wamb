@@ -1,0 +1,48 @@
+/* AutocompleteSelectMultiple widget: Choices.js styled as beercss chips and menu */
+.field > .choices {
+    position: relative;
+}
+.field > .choices .choices__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+    box-sizing: border-box;
+    min-block-size: var(--_input);
+    padding: .5rem 2.9375rem .5rem .9375rem;
+    border: .0625rem solid var(--outline);
+    border-radius: inherit;
+    cursor: text;
+    /* notch for the floating label, same as beercss does for inputs */
+    clip-path: polygon(-2% -2%, .75rem -2%, .75rem .5rem, calc(100% - 1rem) .5rem, calc(100% - 1rem) -2%, 102% -2%, 102% 102%, -2% 102%);
+}
+.field > .choices.is-focused .choices__inner {
+    border: .125rem solid var(--primary);
+    padding: calc(.5rem - .0625rem) calc(2.9375rem - .0625rem) calc(.5rem - .0625rem) calc(.9375rem - .0625rem);
+}
+.field > .choices.is-focused + label {
+    color: var(--primary);
+}
+.field.label.border:not(.fill) > .choices.is-focused + label:after {
+    border-block-start: .125rem solid var(--primary);
+}
+.field > .choices .choices__list--multiple {
+    display: contents;
+}
+/* beercss disables pointer events on icons inside chips, but the icon is the remove button */
+.field > .choices .chip > i[data-button] {
+    pointer-events: auto;
+    cursor: pointer;
+    margin-inline-end: -.25rem;
+}
+.field > .choices input.choices__input {
+    all: unset;
+    flex: 1;
+    min-inline-size: 4rem;
+    block-size: 2rem;
+    font-size: 1rem;
+}
+/* the options are a beercss menu, only show it while Choices has the dropdown open */
+.field > .choices .choices__list--dropdown:not(.is-active) {
+    display: none;
+}

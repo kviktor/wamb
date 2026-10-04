@@ -7,6 +7,7 @@ from app.books.models import (
     BookShelf,
 )
 from app.books.utils import create_book_object_from_pydantic
+from app.books.widgets import AutocompleteSelectMultiple
 from app.metadata.services import (
     get_book_by_isbn,
     get_book_by_url,
@@ -26,6 +27,21 @@ class BookSaveMixin:
         return book
 
 
+def validate_isbn(isbn, *, unique_check):
+    # replace/ignore dashes and whitespaces
+    isbn = isbn.replace("-", "").replace(" ", "")
+
+    # for others raise an error
+    if not str(isbn).isdigit():
+        raise ValidationError({"isbn": "ISBN must only contain numbers."})
+
+    if len(isbn) not in (10, 13):
+        raise ValidationError({"isbn": "ISBN must be either 10 or 13 characters."})
+
+    if unique_check and Book.objects.filter(isbn=isbn).exists():
+        raise ValidationError({"isbn": "A book with this ISBN already exists."})
+
+
 class AddByISBNForm(BookSaveMixin, forms.ModelForm):
     class Meta:
         model = Book
@@ -38,18 +54,7 @@ class AddByISBNForm(BookSaveMixin, forms.ModelForm):
         if not isbn:
             raise ValidationError({"isbn": "This field is required."})
 
-        # replace/ignore dashes and whitespaces
-        isbn = isbn.replace("-", "").replace(" ", "")
-
-        # for others raise an error
-        if not str(isbn).isdigit():
-            raise ValidationError({"isbn": "ISBN must only contain numbers."})
-
-        if len(isbn) not in (10, 13):
-            raise ValidationError({"isbn": "ISBN must be either 10 or 13 characters."})
-
-        if Book.objects.filter(isbn=isbn).exists():
-            raise ValidationError({"isbn": "A book with this ISBN already exists."})
+        validate_isbn(isbn, unique_check=True)
 
         book = get_book_by_isbn(isbn)
         if not book:
@@ -59,9 +64,28 @@ class AddByISBNForm(BookSaveMixin, forms.ModelForm):
 
 
 class ManualEntryForm(forms.ModelForm):
+    """also used for BookUpdateView"""
+
     class Meta:
         model = Book
         fields = ("shelf", "title", "authors", "isbn", "publication_year")
+        widgets = {"authors": AutocompleteSelectMultiple(model="author")}
+
+    def clean(self):
+        super().clean()
+        if isbn := self.cleaned_data.get("isbn"):
+            validate_isbn(isbn, unique_check=False)
+
+    def save(self, *args, **kwargs):
+        book = super().save(*args, **kwargs)
+
+        if shelf := self.cleaned_data["shelf"]:
+            book.shelf = shelf
+            book.position = book.shelf.get_next_position()
+
+        book.save(update_fields=["shelf", "position"])
+
+        return book
 
 
 class AddByURLForm(BookSaveMixin, forms.Form):

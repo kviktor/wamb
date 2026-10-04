@@ -6,6 +6,7 @@
 {% block content %}
     {{ recent_bookcases_json|json_script:"recent-bookcases" }}
     <script src="{% static 'js/bookcase.js' %}"></script>
+    {{ manual_form.media }}
     <article>
         <div class="tabs">
             <a data-ui="#isbn-tab" class="active">
@@ -193,41 +194,41 @@
                         </div>
                     {% endif %}
 
-                    <div class="field label border suffix">
-                        {% include "books/_shelf-selector.html" with prefix="manual" field=manual_form.shelf %}
-                    </div>
-
-                    <div class="field label border">
+                    <div class="field label border {% if manual_form.title.errors %}invalid{% endif %}">
                         {{ manual_form.title }}
                         <label>Title</label>
                         {% if manual_form.title.errors %}
-                            <span class="error">{{ manual_form.title.errors.0 }}</span>
+                            <output class="invalid">{{ manual_form.title.errors.0 }}</output>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border suffix {% if manual_form.authors.errors %}invalid{% endif %}">
+                        {{ manual_form.authors }}
+                        <label class="active">Authors</label>
+                        <i>arrow_drop_down</i>
+                        {% if manual_form.authors.errors %}
+                            <output class="invalid">{{ manual_form.authors.errors.0 }}</output>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border {% if manual_form.isbn.errors %}invalid{% endif %}">
+                        {{ manual_form.isbn }}
+                        <label>ISBN</label>
+                        {% if manual_form.isbn.errors %}
+                            <output class="invalid">{{ manual_form.isbn.errors.0 }}</output>
+                        {% endif %}
+                    </div>
+
+                    <div class="field label border {% if manual_form.publication_year.errors %}invalid{% endif %}">
+                        {{ manual_form.publication_year }}
+                        <label>Publication Year</label>
+                        {% if manual_form.publication_year.errors %}
+                            <output class="invalid">{{ manual_form.publication_year.errors.0 }}</output>
                         {% endif %}
                     </div>
 
                     <div class="field label border suffix">
-                        {{ manual_form.authors }}
-                        <label>Authors</label>
-                        <i>arrow_drop_down</i>
-                        {% if manual_form.authors.errors %}
-                            <span class="error">{{ manual_form.authors.errors.0 }}</span>
-                        {% endif %}
-                    </div>
-
-                    <div class="field label border">
-                        {{ manual_form.isbn }}
-                        <label>ISBN</label>
-                        {% if manual_form.isbn.errors %}
-                            <span class="error">{{ manual_form.isbn.errors.0 }}</span>
-                        {% endif %}
-                    </div>
-
-                    <div class="field label border">
-                        {{ manual_form.publication_year }}
-                        <label>Publication Year</label>
-                        {% if manual_form.publication_year.errors %}
-                            <span class="error">{{ manual_form.publication_year.errors.0 }}</span>
-                        {% endif %}
+                        {% include "books/_shelf-selector.html" with prefix="manual" field=manual_form.shelf %}
                     </div>
 
                     <div class="space"></div>

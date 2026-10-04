@@ -173,7 +173,10 @@ class BookListView(PermissionMixin, ListView):
 
         ctx["view_mode"] = {"table": "table"}.get(self.request.GET.get("view"), "cover")
         ctx["bookcases"] = Bookcase.objects.all().order_by("name")
-        ctx["authors"] = Author.objects.all().order_by("name")
+        # only the selected author is rendered, the rest is searched via autocomplete
+        ctx["selected_author"] = Author.objects.filter(
+            pk=self.filter_data["author"]
+        ).first()
         ctx["filter_data"] = self.filter_data
 
         return ctx
@@ -266,13 +269,7 @@ class ManualEntryView(CreateBookMixin, PermissionMixin, CreateView):
 class BookUpdateView(PermissionMixin, UpdateView):
     model = Book
     template_name = "books/book/update.html"
-    fields = [
-        "shelf",
-        "title",
-        "authors",
-        "isbn",
-        "publication_year",
-    ]
+    form_class = ManualEntryForm
     success_url = reverse_lazy("book-list")
 
 
@@ -296,6 +293,11 @@ def autocomplete(request):
             ),
             "filters": ["name__icontains"],
             "fields": ["id", "name", "shelves_config"],
+        },
+        "author": {
+            "queryset": Author.objects.order_by("name"),
+            "filters": ["name__icontains"],
+            "fields": ["id", "name"],
         },
     }
 

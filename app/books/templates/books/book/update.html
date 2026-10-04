@@ -5,6 +5,7 @@
 
 {% block content %}
     <script src="{% static 'js/bookcase.js' %}"></script>
+    {{ form.media }}
     <article>
         <h5>Edit Book</h5>
         <form method="post">
@@ -16,42 +17,42 @@
                 </div>
             {% endif %}
 
-            {% include "books/_shelf-selector.html" with prefix="edit" field=form.shelf shelf=object.shelf %}
-
-            <div class="field label border">
+            <div class="field label border {% if form.title.errors %}invalid {% endif %}">
                 {{ form.title }}
                 <label>Title</label>
                 {% if form.title.errors %}
-                    <span class="error">{{ form.title.errors.0 }}</span>
+                    <output class="invalid">{{ form.title.errors.0 }}</output>
                 {% endif %}
             </div>
 
-            <div class="field label border suffix">
+            <div class="field label border suffix {% if form.authors.errors %}invalid{% endif %}">
                 {{ form.authors }}
-                <label>Authors</label>
+                <label class="active">Authors</label>
                 <i>arrow_drop_down</i>
                 {% if form.authors.errors %}
-                    <span class="error">{{ form.authors.errors.0 }}</span>
+                    <output class="invalid">{{ form.authors.errors.0 }}</output>
                 {% endif %}
             </div>
 
-            <div class="field label border">
+            <div class="field label border {% if form.isbn.errors %}invalid{% endif %}">
                 {{ form.isbn }}
                 <label>ISBN</label>
                 {% if form.isbn.errors %}
-                    <span class="error">{{ form.isbn.errors.0 }}</span>
+                    <output class="invalid">{{ form.isbn.errors.0 }}</output>
                 {% endif %}
             </div>
 
-            <div class="field label border">
+            <div class="field label border {% if form.publication_year.errors %}invalid{% endif %}">
                 {{ form.publication_year }}
                 <label>Publication Year</label>
                 {% if form.publication_year.errors %}
-                    <span class="error">{{ form.publication_year.errors.0 }}</span>
+                    <span class="invalid">{{ form.publication_year.errors.0 }}</span>
                 {% endif %}
             </div>
 
             <div class="space"></div>
+
+            {% include "books/_shelf-selector.html" with prefix="edit" field=form.shelf shelf=object.shelf %}
 
             <nav>
                 <button type="submit" class="button">
