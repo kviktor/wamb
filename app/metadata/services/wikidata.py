@@ -16,7 +16,10 @@ def get_claim_values(data, claim):
         if not mainsnak:
             continue
 
-        datavalue = mainsnak["datavalue"]
+        datavalue = mainsnak.get("datavalue")
+        if not datavalue:
+            continue
+
         if datavalue["type"] in ("wikibase-item", "wikibase-entityid"):
             value_id = datavalue.get("value", {}).get("id")
             if value_id:

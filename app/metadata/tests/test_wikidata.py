@@ -71,3 +71,31 @@ class UpdateAuthorTest(TestCase):
             wikidata.update_author(author)
 
         self.assertIsNone(author.birth_date)
+
+    @mock.patch("app.metadata.services.wikidata.WikidataClient.search")
+    def test_weird_date(self, p_search):
+
+        p_search.return_value = {
+            "claims": {
+                "P569": [
+                    {
+                        # Nemes István
+                        "mainsnak": {
+                            "snaktype": "somevalue",
+                            "property": "P569",
+                            "hash": "106ae1709778d107bb140cc83cfae29cd126b470",
+                            "datatype": "time",
+                        },
+                        "type": "statement",
+                        "id": "Q23821384$d378dc1d-4674-fa1d-d509-72efdf44baaa",
+                        "rank": "normal",
+                    }
+                ]
+            }
+        }
+        author = baker.make("books.Author", birth_date=None)
+
+        with self.assertNoLogs():
+            wikidata.update_author(author)
+
+        self.assertIsNone(author.birth_date)
