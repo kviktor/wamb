@@ -1,7 +1,16 @@
-from django.contrib.auth.decorators import permission_required
+import json
+
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.exceptions import PermissionDenied
-from django.db.models import Count, Prefetch, Q
+from django.db.models import (
+    Case,
+    Count,
+    F,
+    Prefetch,
+    Q,
+    Value,
+    When,
+)
 from django.http import JsonResponse
 from django.urls import reverse_lazy
 from django.utils.functional import cached_property
@@ -125,7 +134,10 @@ class BookcaseDetailView(PermissionMixin, DetailView):
                 )
                 .select_related("bookcase")
                 .prefetch_related(
-                    Prefetch("books", queryset=Book.objects.select_related("cover"))
+                    Prefetch(
+                        "books",
+                        queryset=Book.objects.select_related("cover").order_by("position"),
+                    )
                 )
             ),
         ),
@@ -338,7 +350,6 @@ def autocomplete(request):
 
 
 @csrf_exempt
-@permission_required("books.add_book")
 def add_by_isbn_api_view(request):
     if not (request.user.is_authenticated and request.user.can_change):
         raise PermissionDenied
@@ -350,3 +361,20 @@ def add_by_isbn_api_view(request):
     book = form.save()
 
     return JsonResponse({"success": True, "title": book.title}, status=200)
+
+
+@csrf_exempt
+def reorder_books(request, pk):
+    if not (request.user.is_authenticated and request.user.can_change):
+        raise PermissionDenied
+
+    data = json.loads(request.body)
+
+    for key, items in data.items():
+        Book.objects.filter(shelf__bookcase=pk, id__in=items).annotate(
+            new_position=Case(
+                *[When(pk=pk, then=Value(idx)) for idx, pk in enumerate(items)]
+            )
+        ).update(shelf=key, position=F("new_position"))
+
+    return JsonResponse({"success": True})

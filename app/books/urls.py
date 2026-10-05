@@ -21,6 +21,11 @@ urlpatterns = [
         views.BookcaseDeleteView.as_view(),
         name="bookcase-delete",
     ),
+    path(
+        "bookcases/<int:pk>/reorder/",
+        views.reorder_books,
+        name="bookcase-reorder",
+    ),
     # Author URLs
     path("authors/", views.AuthorListView.as_view(), name="author-list"),
     path("authors/new/", views.AuthorCreateView.as_view(), name="author-create"),
