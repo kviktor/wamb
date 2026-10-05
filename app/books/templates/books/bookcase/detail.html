@@ -31,7 +31,16 @@
             {% endfor %}
         </table>
     </article>
-    <script src="{% static "js/drag-drop-touch.esm.min.js?autoload" %}" type="module"></script>
+    <script type="module">
+        import { enableDragDropTouch } from "{% static 'js/drag-drop-touch.esm.min.js' %}";
+
+        enableDragDropTouch(document, document, {
+            isPressHoldMode: true,
+            pressHoldDelayMS: 250,
+            contextMenuDelayMS: 3000,
+            pressHoldThresholdPixels: 5,
+        });
+    </script>
     <script>
         let dragged = null;
         const bookcaseTable = document.getElementById("bookcase-table")
@@ -47,7 +56,7 @@
             if(!ev.target.dataset.pk) return;
             if(ev.target.dataset.pk === dragged.dataset.pk) return;
             const rect = ev.target.getBoundingClientRect();
-            const isLeftHalf = ev.x < rect.x + rect.width / 2;
+            const isLeftHalf = ev.clientX < rect.x + rect.width / 2;
 
             ev.target.classList.add(isLeftHalf ? "left-enter" : "right-enter");
             ev.target.classList.remove(isLeftHalf ? "right-enter" : "left-enter");
@@ -74,7 +83,7 @@
                 target = ev.target;
             } else {
                 const rect = ev.target.getBoundingClientRect();
-                const isLeftHalf = ev.x < rect.x + rect.width / 2;
+                const isLeftHalf = ev.clientX < rect.x + rect.width / 2;
                 const item = ev.target.parentElement;
                 target = isLeftHalf
                     ? item.previousElementSibling
