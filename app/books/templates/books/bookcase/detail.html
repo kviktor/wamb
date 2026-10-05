@@ -1,4 +1,5 @@
 {% extends "books/base.html" %}
+{% load static %}
 
 {% block title %}{{ bookcase.name }} | Bookcase{% endblock %}
 
@@ -30,6 +31,7 @@
             {% endfor %}
         </table>
     </article>
+    <script src="{% static "js/drag-drop-touch.esm.min.js?autoload" %}" type="module"></script>
     <script>
         let dragged = null;
         const bookcaseTable = document.getElementById("bookcase-table")
@@ -125,7 +127,6 @@
                 alert(error);
             }
         }
-
     </script>
 
     <style>
