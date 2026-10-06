@@ -108,9 +108,9 @@ class AuthorCreateView(PermissionMixin, CreateView):
 class BookcaseListView(PermissionMixin, ListView):
     model = Bookcase
     queryset = Bookcase.objects.annotate(
-        num_shelves=Count("shelves"),
-        num_books=Count("shelves__books"),
-    )
+        num_shelves=Count("shelves", distinct=True),
+        num_books=Count("shelves__books", distinct=True),
+    ).order_by("name")
     template_name = "books/bookcase/list.html"
     context_object_name = "bookcases"
 

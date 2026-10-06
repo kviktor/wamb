@@ -24,21 +24,21 @@
                         <th class="center-align">Books</th>
                         <th class="center-align">Shelves</th>
                         <th>Created</th>
-                        <th class="center-align">Actions</th>
+                        <th class="center-align m l">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for bookcase in bookcases %}
                         <tr>
                             <td>
-                                <a href="{% url 'bookcase-update' bookcase.pk %}"
+                                <a href="{% url 'bookcase-detail' bookcase.pk %}"
                                 >{{ bookcase.name }}</a
                                     >
                                 </td>
                                 <td class="center-align">{{ bookcase.num_books }}</td>
                                 <td class="center-align">{{ bookcase.num_shelves }}</td>
                                 <td>{{ bookcase.created_at|date:"Y-m-d" }}</td>
-                                <td class="center-align">
+                                <td class="center-align m l">
                                     <a
                                         href="{% url 'bookcase-detail' bookcase.pk %}"
                                         class="button small-round"

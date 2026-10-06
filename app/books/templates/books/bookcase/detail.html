@@ -6,7 +6,14 @@
 {% block content %}
     <article>
         <h3>
+            <i>shelves</i>
             {{ bookcase.name }}
+            {% if request.user.can_change %}
+                <a href="{% url 'bookcase-update' bookcase.pk %}" class="button right absolute">
+                    <i>edit</i>
+                    <span class="m l">Edit</span>
+                </a>
+            {% endif %}
         </h3>
 
         {% regroup bookcase.shelves.all by row as shelves %}
