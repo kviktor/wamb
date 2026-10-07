@@ -1,0 +1,152 @@
+{% load static %}
+<table id="bookcase-table">
+    {% for row in shelves %}
+        <tr>
+            {% for shelf in row.list %}
+                <td rowspan="{{ shelf.config.rowspan }}" colspan="{{ shelf.config.colspan }}">
+                    <div class="row scroll" data-shelf-pk="{{ shelf.pk }}">
+                        <div class="drop-target"></div>
+                        {% for book in shelf.books.all %}
+                            <a href="{% url "book-detail" pk=book.pk %}" title="{{ book.title }}" draggable="false">
+                                <img src="{{ book.get_cover_url }}" data-pk="{{ book.pk }}"/>
+                            </a>
+                            <div class="drop-target"></div>
+                        {% endfor %}
+                    </div>
+                </td>
+            {% endfor %}
+        </tr>
+    {% endfor %}
+</table>
+<script>
+    let dragged = null;
+    const bookcaseTable = document.getElementById("bookcase-table")
+    bookcaseTable.addEventListener("dragstart", function(ev) {
+        // set the pk of the book we started to drag
+        ev.dataTransfer.setData("text/plain", ev.target.dataset.pk);
+        dragged = ev.target;
+    });
+    bookcaseTable.addEventListener("dragover", function(ev) {
+        // this is needed so we can drop
+        ev.preventDefault();
+
+        if(!ev.target.dataset.pk) return;
+        if(ev.target.dataset.pk === dragged.dataset.pk) return;
+        const rect = ev.target.getBoundingClientRect();
+        const isLeftHalf = ev.clientX < rect.x + rect.width / 2;
+
+        ev.target.classList.add(isLeftHalf ? "left-enter" : "right-enter");
+        ev.target.classList.remove(isLeftHalf ? "right-enter" : "left-enter");
+    });
+    bookcaseTable.addEventListener("dragleave", function(ev) {
+        ev.preventDefault();
+        if(!ev.target.dataset.pk) return;
+        if(ev.target.dataset.pk === dragged.dataset.pk) return;
+
+        ev.target.classList.remove("right-enter", "left-enter");
+    });
+    bookcaseTable.addEventListener("drop", function(ev) {
+        /* this is bit of a mess, tl;dr is that we check the target:
+           - if it's a drop-target (space between books) then we use that
+           - else it's an image (a book), we get the previous/next drop-target
+           after this we simply move around and remove nodes */
+        ev.preventDefault();
+
+        // if we didn't drag it over a book, let's ignore
+        if(!ev.target.dataset.pk) return;
+
+        let target;
+        if(ev.target.classList.contains("drop-target")) {
+            target = ev.target;
+        } else {
+            const rect = ev.target.getBoundingClientRect();
+            const isLeftHalf = ev.clientX < rect.x + rect.width / 2;
+            const item = ev.target.parentElement;
+            target = isLeftHalf
+                ? item.previousElementSibling
+                : item.nextElementSibling;
+        }
+
+        // will have either 1 or 2 (in case of moving between shelves) elements
+        const affectedShelves = new Set();
+        // get the pk of the book that got dragged here
+        const pk = ev.dataTransfer.getData("text/plain");
+        // get the actual <a> tag of the book that got dragged here
+        const wrapper = document.querySelector(`[data-pk="${pk}"]`).parentElement;
+        affectedShelves.add(wrapper.parentNode.dataset.shelfPk);
+        // remove one extra div left by dragging a book out
+        wrapper.nextElementSibling.remove();
+        // insert before the drop target
+        target.parentNode.insertBefore(wrapper, target);
+        // add an extra div before the moved book
+        const div = document.createElement("div");
+        div.classList.add("drop-target");
+        target.parentNode.insertBefore(div, wrapper);
+        // cleanup hover classes
+        ev.target.classList.remove("right-enter", "left-enter");
+
+        affectedShelves.add(wrapper.parentNode.dataset.shelfPk);
+        updateShelfOrder(affectedShelves);
+    });
+
+    function updateShelfOrder(shelves) {
+        let payload = {};
+        for(const pk of shelves) {
+            const row = document.querySelector(`[data-shelf-pk="${pk}"]`);
+            payload[pk] = [...row.querySelectorAll("[data-pk]")].map(item => item.dataset.pk);
+        }
+
+        reorderCall(payload);
+    }
+</script>
+
+<style>
+    img {
+        &.right-enter {
+            mask-image: linear-gradient(to left, transparent 10%, black);
+        }
+        &.left-enter {
+            mask-image: linear-gradient(to right, transparent 10%, black);
+        }
+    }
+    table {
+        table-layout: fixed;
+        background: var(--primary);
+
+        & td {
+            padding: 30px;
+            &::after {
+                content: "";
+                display: block;
+                width: 100%;
+                height: 10px;
+                background: var(--secondary);
+                margin-top: 5px;
+                border: 1px solid black;
+                box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+
+            }
+        }
+
+        & a {
+            border: 1px solid rgba(0, 0, 0, 0.2);
+            margin: 0;
+            box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+            img {
+                height: 150px;
+                margin: 0;
+                aspect-ratio: 2/3;
+            }
+
+        }
+
+        .row {
+            gap: 0px;
+
+            div {
+                width: 5px;
+                height: 150px;
+            }
+        }
+    }
+</style>

@@ -124,7 +124,7 @@ class BookcaseCreateView(PermissionMixin, CreateView):
 
 class BookcaseDetailView(PermissionMixin, DetailView):
     model = Bookcase
-    template_name = "books/bookcase/detail.html"
+    template_name = "books/bookcase/detail/index.html"
     queryset = Bookcase.objects.prefetch_related(
         Prefetch(
             "shelves",
@@ -142,6 +142,15 @@ class BookcaseDetailView(PermissionMixin, DetailView):
             ),
         ),
     )
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx["view_modes"] = (
+            ("cover", "photo"),
+            ("table", "table"),
+        )
+        ctx["view_mode"] = {"table": "table"}.get(self.request.GET.get("view"), "cover")
+        return ctx
 
 
 class BookcaseUpdateView(PermissionMixin, UpdateView):

@@ -1,0 +1,62 @@
+{% extends "books/base.html" %}
+{% load static %}
+
+{% block title %}{{ bookcase.name }} | Bookcase{% endblock %}
+
+{% block content %}
+    <article>
+        <h3>
+            <i>shelves</i>
+            {{ bookcase.name }}
+
+            {% for name, icon in view_modes %}
+                <a class="button small small-round" href="{% querystring request.GET view=name %}" {% if name == view_mode %}disabled{% endif %}>
+                    <i>{{ icon }}</i>
+                    <span class="max m l">{{ name|title }}</span>
+                </a>
+            {% endfor %}
+
+            {% if request.user.can_change %}
+                <a href="{% url 'bookcase-update' bookcase.pk %}" class="button right absolute">
+                    <i>edit</i>
+                    <span class="m l">Edit</span>
+                </a>
+            {% endif %}
+        </h3>
+
+        {% regroup bookcase.shelves.all by row as shelves %}
+
+        {% include "books/bookcase/detail/_"|add:view_mode|add:".html" %}
+    </article>
+
+    <script type="module">
+        import { enableDragDropTouch } from "{% static 'js/drag-drop-touch.esm.min.js' %}";
+
+        enableDragDropTouch(document, document, {
+            isPressHoldMode: true,
+            pressHoldDelayMS: 250,
+            contextMenuDelayMS: 3000,
+            pressHoldThresholdPixels: 5,
+        });
+    </script>
+    <script>
+        async function reorderCall(payload) {
+            try {
+                const response = await fetch(
+                    "{% url "bookcase-reorder" pk=bookcase.pk %}",
+                    {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify(payload),
+                    },
+                );
+                if (!response.ok)
+                    throw new Error(`HTTP error! status: ${response.status}`);
+            } catch (error) {
+                alert(error);
+            }
+        }
+    </script>
+{% endblock content %}

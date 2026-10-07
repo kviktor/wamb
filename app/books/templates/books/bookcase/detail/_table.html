@@ -1,0 +1,98 @@
+{% for shelf in bookcase.shelves.all %}
+    <h4>{{ shelf.location }}</h4>
+    <table class="stripes small-space" draggable="false" data-shelf-pk="{{ shelf.pk }}">
+        {% for book in shelf.books.all %}
+            <tr draggable="true" data-pk="{{ book.pk }}">
+                <td>{{ book.title }}</td>
+                <td class="min m l">{{ book.isbn|default:"-" }}</td>
+                <td class="min">
+                    <button class="chip small secondary down" title="Move down" {% if forloop.last %}disabled{% endif %}><i>arrow_circle_down</i></button>
+                    <button class="chip small secondary up" title="Move up" {% if forloop.first %}disabled{% endif %}><i>arrow_circle_up</i></button>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endfor %}
+
+<script>
+    // drag'n'drop
+    let row = null;
+    let affectedShelves = new Set();
+
+    document.body.addEventListener("dragstart", function(ev) {
+        if(!ev.target.dataset.pk) return;
+        row = ev.target;
+    });
+
+    document.body.addEventListener("dragover", function(ev) {
+        ev.preventDefault();
+
+        if(!row) return;
+
+        const targetRow = ev.target.parentNode;
+        if(!targetRow.dataset.pk || targetRow.dataset.pk === row.dataset.pk) return;
+
+        // tr -> tbody -> table
+        const targetShelfPk = targetRow.parentNode.parentNode.dataset.shelfPk;
+        if(!targetShelfPk) return;
+
+        // add it to the set before we change the parent
+        // this is needed if we move a row staright to the next table
+        affectedShelves.add(row.parentNode.parentNode.dataset.shelfPk);
+
+        const children = Array.from(ev.target.parentNode.parentNode.children);
+        if(children.indexOf(ev.target.parentNode) > children.indexOf(row)) {
+            ev.target.parentNode.after(row);
+        }
+        else {
+            ev.target.parentNode.before(row);
+        }
+
+        affectedShelves.add(targetShelfPk);
+    });
+
+    document.body.addEventListener("drop", function(ev) {
+        row = null;
+
+        let payload = {};
+        for(const pk of affectedShelves) {
+            const row = document.querySelector(`[data-shelf-pk="${pk}"]`);
+            payload[pk] = [...row.querySelectorAll("[data-pk]")].map(item => item.dataset.pk);
+        }
+
+        reorderCall(payload);
+    });
+</script>
+<script>
+    // buttons
+    document.body.addEventListener("click", function(ev) {
+        if(!ev.target.classList.contains("chip")) return;
+
+        const isUp = ev.target.classList.contains("up");
+
+        const targetRow = ev.target.parentNode.parentNode;
+
+        if(isUp) {
+            targetRow.previousElementSibling.before(targetRow);
+        } else {
+            targetRow.nextElementSibling.after(targetRow);
+        }
+
+        for(const btn of targetRow.parentNode.querySelectorAll(".up, .down")) {
+            btn.removeAttribute("disabled");
+        }
+
+        const children = Array.from(targetRow.parentNode.children);
+        children[0].querySelector(".up").setAttribute("disabled", "");
+        children[children.length - 1].querySelector(".down").setAttribute("disabled", "");
+
+        let payload = {};
+        const pk= targetRow.parentNode.parentNode.dataset.shelfPk;
+        console.log(pk);
+        const row = document.querySelector(`[data-shelf-pk="${pk}"]`);
+        payload[pk] = [...row.querySelectorAll("[data-pk]")].map(item => item.dataset.pk);
+
+        reorderCall(payload);
+    });
+
+</script>
