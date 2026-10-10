@@ -48,6 +48,9 @@ class IndexView(LoginRequiredMixin, TemplateView):
         ctx = super().get_context_data(**kwargs)
 
         ctx["total_number_of_books"] = Book.objects.count()
+        ctx["authors_with_books"] = (
+            Author.objects.filter(books__isnull=False).distinct().count()
+        )
         ctx["latest_books"] = Book.objects.order_by("-created_at")[:10]
 
         return ctx

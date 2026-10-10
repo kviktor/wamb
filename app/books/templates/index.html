@@ -8,28 +8,38 @@
                 Welcome
             </h3>
         </div>
-        <div>
-            {% if user.can_view %}
-                <p>
-                    We have {{ total_number_of_books }} books.
-                </p>
-                <p>
-                    Latest books:
-                    <ul class="left-padding">
-                        {% for book in latest_books %}
-                            <li>
-                                <a href="{% url "book-detail" pk=book.pk %}">
-                                    {{ book }}
-                                </a>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </p>
-            {% else %}
-                <p>
-                    You don't have permissions to view anything.
-                </p>
-            {% endif %}
-        </div>
+        {% if user.can_view %}
+            <p>
+                We have {{ total_number_of_books }} books
+                by {{ authors_with_books }} authors.
+            </p>
+            <div>
+                <h4>
+                    <i>book_2</i>
+                    Recently added books
+                </h4>
+                <div class="row scroll">
+                    {% for book in latest_books %}
+                        <a href="{% url "book-detail" pk=book.pk %}">
+                            <img src="{{ book.get_cover_url }}"/>
+                        </a>
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            <p>
+                You don't have permissions to view anything.
+            </p>
+        {% endif %}
     </article>
+    <style>
+        .row {
+            gap: 10px;
+        }
+        a img {
+            height: 150px;
+            margin: 0;
+            aspect-ratio: 2/3;
+        }
+    </style>
 {% endblock content %}
