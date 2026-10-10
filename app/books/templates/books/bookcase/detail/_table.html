@@ -3,7 +3,11 @@
     <table class="stripes small-space" draggable="false" data-shelf-pk="{{ shelf.pk }}">
         {% for book in shelf.books.all %}
             <tr draggable="true" data-pk="{{ book.pk }}">
-                <td>{{ book.title }}</td>
+                <td>
+                    <a href="{% url "book-detail" pk=book.pk %}" draggable="false">
+                        {{ book.title }}
+                    </a>
+                </td>
                 <td class="min m l">{{ book.isbn|default:"-" }}</td>
                 <td class="min">
                     <button class="chip small secondary down" title="Move down" {% if forloop.last %}disabled{% endif %}><i>arrow_circle_down</i></button>
