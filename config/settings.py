@@ -106,6 +106,7 @@ DATABASES = {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": env.str("DB_PATH", default=BASE_DIR / "db.sqlite3"),
         "ATOMIC_REQUESTS": True,
+        "OPTIONS": {"init_command": "PRAGMA journal_mode=WAL;"},
     }
 }
 
