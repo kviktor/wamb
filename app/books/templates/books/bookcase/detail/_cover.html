@@ -99,9 +99,22 @@
         reorderCall(payload);
     }
 </script>
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlSearchParams = new URLSearchParams(window.location.search);
+        const focus = urlSearchParams.get("focus");
+        if(focus) {
+            const book = document.querySelector(`[data-pk="${focus}"]`);
+            book.scrollIntoView();
+            book.classList.add("focus");
+        }
+    });
+</script>
 <style>
     img {
+        &.focus {
+            border: 3px dashed var(--on-primary);
+        }
         &.right-enter {
             mask-image: linear-gradient(to left, transparent 10%, black);
         }

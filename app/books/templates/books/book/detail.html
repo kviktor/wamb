@@ -74,11 +74,11 @@
                         />
                         <label>Location</label>
                         <span class="helper">
-                            <a href="{% url 'bookcase-detail' book.shelf.bookcase.pk %}"
-                            >View Bookcase</a
-                                >
-                            </span>
-                        </div>
+                            <a href="{% url 'bookcase-detail' book.shelf.bookcase.pk %}?focus={{ book.pk }}">
+                                View Bookcase
+                            </a>
+                        </span>
+                    </div>
                 {% endif %}
             </div>
         </div>
