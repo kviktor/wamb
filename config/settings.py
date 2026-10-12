@@ -191,8 +191,9 @@ if SECURE_PROXY_SSL_HEADER_NAME := env.str("SECURE_PROXY_SSL_HEADER_NAME", defau
 
 if "test" in sys.argv:
     SECRET_KEY = "secret"
-    # to avoid needing collectstatic for tests
-    STORAGES["staticfiles"]["BACKEND"] = "django.core.files.storage.FileSystemStorage"
+    # avoid needing collectstatic for tests and file uploads keeping their name
+    for key in STORAGES.keys():
+        STORAGES[key]["BACKEND"] = "django.core.files.storage.InMemoryStorage"
     # in-memory database for tests
     DATABASES = {"default": {"ENGINE": "django.db.backends.sqlite3", "NAME": ":memory:"}}
 

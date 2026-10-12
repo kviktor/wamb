@@ -15,26 +15,33 @@ class ImageClient(Client):
     SERVICE = Service.image
 
 
-def get_or_create_image(cover_url: str) -> Image | None:
-    if not cover_url:
+def get_or_create_image(image_url: str) -> Image | None:
+    if not image_url:
         return None
 
-    if image := Image.objects.filter(source=cover_url).first():
+    # in case the image url is too long
+    truncated_image_url = image_url[:200]
+
+    if image := Image.objects.filter(source=truncated_image_url).first():
         return image
 
     # download image
-    response = ImageClient().get(cover_url)
+    response = ImageClient().get(image_url)
     content_file = ContentFile(response.content)
-    image = Image(source=cover_url)
+    image = Image(source=truncated_image_url)
 
     # generate the name from the cover url
-    name = Path(urllib.parse.urlparse(cover_url).path).name
+    name = Path(urllib.parse.urlparse(image_url).path).name
 
     # it might not contain an extension (Google Books for example)
     if "." not in name:
         content_type = response.headers["Content-Type"]
         ext = guess_extension(content_type)
         name = f"{uuid.uuid4()}{ext}"
+
+    if len(name) > 90:
+        ext = Path(name).suffix
+        name = f"{name[:90]}{ext}"
 
     image.image.save(name, content_file, save=True)
 

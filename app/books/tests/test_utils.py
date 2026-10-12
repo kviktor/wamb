@@ -14,6 +14,30 @@ from app.metadata.services.base import (
 )
 
 
+class GetOrCreateImageTest(TestCase):
+    def test_empty_url(self):
+        self.assertIsNone(utils.get_or_create_image(""))
+
+    def test_already_in_db(self):
+        image = baker.make("books.Image", source="http://te.st/image.jpeg")
+        self.assertEqual(utils.get_or_create_image("http://te.st/image.jpeg"), image)
+
+    def test_already_in_db_too_long(self):
+        long_source = "http://" + "a" * 200
+        image = baker.make("books.Image", source="http://" + "a" * (200 - len("http://")))
+        self.assertEqual(utils.get_or_create_image(long_source), image)
+
+    @mock.patch("app.books.utils.ImageClient.get")
+    def test_name_too_long(self, p_get):
+        response = mock.Mock(content=b"")
+        response.headers = {}
+        p_get.return_value = response
+        long_source = "http://te.st/" + "a" * 200 + ".jpg"
+
+        image = utils.get_or_create_image(long_source)
+        self.assertEqual(image.image.name, "a" * 90 + ".jpg")
+
+
 class CreateBookObjectFromPydantic(TestCase):
     def setUp(self):
         self.metadata = BookMetadata(
