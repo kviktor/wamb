@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.forms import SetPasswordForm
 from django.contrib.auth.views import LoginView as DjangoLoginView
+from django.core.exceptions import SuspiciousOperation
 from django.urls import reverse_lazy
 from django.views.generic import (
     CreateView,
@@ -21,8 +22,15 @@ class LoginView(DjangoLoginView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["is_social_django_enabled"] = "social_django" in settings.INSTALLED_APPS
+        ctx["social_logins"] = settings.SOCIAL_LOGINS
+        ctx["disable_password_login"] = settings.DISABLE_PASSWORD_LOGIN
         return ctx
+
+    def form_valid(self, form):
+        if settings.DISABLE_PASSWORD_LOGIN:
+            raise SuspiciousOperation
+
+        return super().form_valid(form)
 
 
 class UserListView(PermissionMixin, ListView):

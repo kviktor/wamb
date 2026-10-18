@@ -5,7 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = "==3.14.*"
 dependencies = [
-    "django==6.1.1",
+    "django==6.1.2",
     "django-environ>=0.12.0",
     "django-htmx>=1.27.0",
     "beautifulsoup4>=4.14.3",
@@ -18,7 +18,8 @@ dependencies = [
     "social-auth-app-django>=6.1.0",
 ]
 
-
+[tool.uv]
+exclude-newer = "7 days"
 
 [tool.ruff]
 line-length = 91
@@ -26,7 +27,6 @@ target-version = "py314"
 
 [tool.ruff.lint]
 select = ["F", "E", "B", "S", "DJ", "I001"]
-
 
 [tool.ruff.lint.isort.sections]
 "django" = ["django"]
