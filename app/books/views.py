@@ -11,7 +11,8 @@ from django.db.models import (
     Value,
     When,
 )
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils.functional import cached_property
 from django.views.decorators.csrf import csrf_exempt
@@ -37,6 +38,7 @@ from .models import (
     Book,
     Bookcase,
     BookShelf,
+    Image,
 )
 from .utils import get_int_or_default
 
@@ -390,3 +392,24 @@ def reorder_books(request, pk):
         ).update(shelf=key, position=F("new_position"))
 
     return JsonResponse({"success": True})
+
+
+@csrf_exempt
+def upload_new_book_cover(request, pk):
+    if not (request.user.is_authenticated and request.user.can_change):
+        raise PermissionDenied
+
+    book = get_object_or_404(Book, pk=pk)
+
+    image_file = request.FILES["image"]
+    image = Image.objects.create(source=image_file.name, image=request.FILES["image"])
+
+    old_cover = book.cover
+    book.cover = image
+    book.save(update_fields=["cover"])
+
+    if old_cover:
+        old_cover.image.storage.delete(old_cover.image.name)
+        old_cover.delete()
+
+    return HttpResponseRedirect(reverse_lazy("book-update", kwargs={"pk": book.pk}))

@@ -35,6 +35,7 @@ urlpatterns = [
     path("books/<int:pk>/", views.BookDetailView.as_view(), name="book-detail"),
     path("books/new/", views.BookCreateView.as_view(), name="book-create"),
     path("books/<int:pk>/edit/", views.BookUpdateView.as_view(), name="book-update"),
+    path("books/<int:pk>/upload/", views.upload_new_book_cover, name="book-upload"),
     path("books/<int:pk>/delete/", views.BookDeleteView.as_view(), name="book-delete"),
     path("books/new/isbn/", views.AddByISBNView.as_view(), name="book-create-isbn"),
     path("books/new/url/", views.AddByURLView.as_view(), name="book-create-url"),

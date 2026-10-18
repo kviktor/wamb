@@ -50,6 +50,14 @@
                 {% endif %}
             </div>
 
+            <div class="field label border {% if form.number_of_pages.errors %}invalid{% endif %}">
+                {{ form.number_of_pages }}
+                <label>Number of pages</label>
+                {% if form.number_of_pages.errors %}
+                    <span class="invalid">{{ form.number_of_pages.errors.0 }}</span>
+                {% endif %}
+            </div>
+
             <div class="space"></div>
 
             {% include "books/_shelf-selector.html" with prefix="edit" field=form.shelf shelf=object.shelf %}
@@ -65,5 +73,33 @@
                 </a>
             </nav>
         </form>
+
+        <div class="space"></div>
+
+        <div>
+            <h5>Upload new cover</h5>
+            <div class="row">
+                <div class="s12 m6">
+                    {% if book.cover %}
+                        <img class="large-height" src="{{ book.get_cover_url }}"/>
+                    {% else %}
+                        no cover
+                    {% endif %}
+                </div>
+                <div class="s12 m6">
+                    <form method="POST" action="{% url "book-upload" pk=book.pk %}" enctype="multipart/form-data">
+                        <div class="field label prefix border">
+                            <i>image_arrow_up</i>
+                            <input name="image" type="file" required>
+                            <input type="text">
+                            <label>File</label>
+                        </div>
+                        <div class="field">
+                            <button>Upload</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </article>
 {% endblock content %}

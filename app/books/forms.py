@@ -72,7 +72,14 @@ class ManualEntryForm(forms.ModelForm):
 
     class Meta:
         model = Book
-        fields = ("shelf", "title", "authors", "isbn", "publication_year")
+        fields = (
+            "shelf",
+            "title",
+            "authors",
+            "isbn",
+            "publication_year",
+            "number_of_pages",
+        )
         widgets = {"authors": AutocompleteSelectMultiple(model="author")}
 
     def clean(self):
