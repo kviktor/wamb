@@ -27,19 +27,19 @@ class BookSaveMixin:
         return book
 
 
-def validate_isbn(isbn, *, unique_check):
+def validate_isbn(isbn, field_name="isbn", *, unique_check: bool):
     # replace/ignore dashes and whitespaces
     isbn = isbn.replace("-", "").replace(" ", "")
 
     # for others raise an error
     if not str(isbn).isdigit():
-        raise ValidationError({"isbn": "ISBN must only contain numbers."})
+        raise ValidationError({field_name: "ISBN must only contain numbers."})
 
     if len(isbn) not in (10, 13):
-        raise ValidationError({"isbn": "ISBN must be either 10 or 13 characters."})
+        raise ValidationError({field_name: "ISBN must be either 10 or 13 characters."})
 
     if unique_check and Book.objects.filter(isbn=isbn).exists():
-        raise ValidationError({"isbn": "A book with this ISBN already exists."})
+        raise ValidationError({field_name: "A book with this ISBN already exists."})
 
 
 class AddByISBNForm(BookSaveMixin, forms.ModelForm):
@@ -102,6 +102,9 @@ class AddByURLForm(BookSaveMixin, forms.Form):
         book = get_book_by_url(url)
         if not book:
             raise ValidationError({"url": "Could not fetch book data from this URL."})
+
+        if book.isbn:
+            validate_isbn(book.isbn, field_name="url", unique_check=True)
 
         self.book = book
 
