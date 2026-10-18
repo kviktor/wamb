@@ -11,8 +11,11 @@ from django.db.models import (
     Value,
     When,
 )
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import get_object_or_404
+from django.http import JsonResponse
+from django.shortcuts import (
+    get_object_or_404,
+    render,
+)
 from django.urls import reverse_lazy
 from django.utils.functional import cached_property
 from django.views.decorators.csrf import csrf_exempt
@@ -32,13 +35,13 @@ from .forms import (
     AddByURLForm,
     BookcaseCreateForm,
     ManualEntryForm,
+    UploadCoverForm,
 )
 from .models import (
     Author,
     Book,
     Bookcase,
     BookShelf,
-    Image,
 )
 from .utils import get_int_or_default
 
@@ -400,16 +403,19 @@ def upload_new_book_cover(request, pk):
         raise PermissionDenied
 
     book = get_object_or_404(Book, pk=pk)
+    form = UploadCoverForm(files=request.FILES)
 
-    image_file = request.FILES["image"]
-    image = Image.objects.create(source=image_file.name, image=request.FILES["image"])
+    if form.is_valid():
+        new_image = form.save()
 
-    old_cover = book.cover
-    book.cover = image
-    book.save(update_fields=["cover"])
+        old_cover = book.cover
+        book.cover = new_image
+        book.save()
 
-    if old_cover:
-        old_cover.image.storage.delete(old_cover.image.name)
-        old_cover.delete()
+        if old_cover:
+            old_cover.image.storage.delete(old_cover.image.name)
+            old_cover.delete()
 
-    return HttpResponseRedirect(reverse_lazy("book-update", kwargs={"pk": book.pk}))
+    return render(
+        request, "books/book/update.html#upload-cover", {"upload_form": form, "book": book}
+    )

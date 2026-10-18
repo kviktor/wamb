@@ -1,7 +1,10 @@
+from io import BytesIO
 from mimetypes import guess_extension
 from pathlib import Path
 import urllib
 import uuid
+
+from PIL import Image as PillowImage
 
 from django.core.files.base import ContentFile
 
@@ -95,3 +98,18 @@ def get_int_or_default(value, default=None):
         return int(value)
     except TypeError, ValueError:
         return default
+
+
+def convert_and_resize_image(image_file, width: int = None):
+    pillow_image = PillowImage.open(image_file)
+
+    if width and pillow_image.width > width:
+        ratio = pillow_image.width / width
+        height = int(pillow_image.height / ratio)
+        pillow_image = pillow_image.resize((width, height))
+
+    buffer = BytesIO()
+    pillow_image.save(buffer, "webp", method=4, quality=90)
+    pillow_image.close()
+
+    return buffer

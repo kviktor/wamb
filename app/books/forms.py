@@ -5,8 +5,12 @@ from app.books.models import (
     Book,
     Bookcase,
     BookShelf,
+    Image,
 )
-from app.books.utils import create_book_object_from_pydantic
+from app.books.utils import (
+    convert_and_resize_image,
+    create_book_object_from_pydantic,
+)
 from app.books.widgets import AutocompleteSelectMultiple
 from app.metadata.services import (
     get_book_by_isbn,
@@ -148,3 +152,26 @@ class BookcaseCreateForm(forms.ModelForm):
         BookShelf.objects.bulk_create(shelves)
 
         return bookcase
+
+
+class UploadCoverForm(forms.ModelForm):
+    class Meta:
+        model = Image
+        fields = ("image",)
+
+    def clean(self):
+        if image := self.cleaned_data.get("image"):
+            if Image.objects.filter(source=image.name):
+                raise ValidationError({"image": "Name already exists."})
+
+    def save(self, *args, **kwargs):
+        image_file = self.cleaned_data["image"]
+
+        image_content = convert_and_resize_image(image_file, 400)
+
+        new_name = f"{image_file.name.split('.', 1)[0]}.webp"
+        image = Image(source=image_file.name)
+        image.image.save(new_name, image_content, save=False)
+        image.save()
+
+        return image

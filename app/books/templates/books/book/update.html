@@ -78,28 +78,39 @@
 
         <div>
             <h5>Upload new cover</h5>
-            <div class="row">
-                <div class="s12 m6">
-                    {% if book.cover %}
-                        <img class="large-height" src="{{ book.get_cover_url }}"/>
-                    {% else %}
-                        no cover
-                    {% endif %}
-                </div>
-                <div class="s12 m6">
-                    <form method="POST" action="{% url "book-upload" pk=book.pk %}" enctype="multipart/form-data">
-                        <div class="field label prefix border">
-                            <i>image_arrow_up</i>
-                            <input name="image" type="file" required>
-                            <input type="text">
-                            <label>File</label>
+            {% partialdef upload-cover inline %}
+                <form
+                    method="POST"
+                    action="{% url "book-upload" pk=book.pk %}"
+                    enctype="multipart/form-data"
+                    hx-post="{% url 'book-upload' pk=book.pk %}"
+                    hx-swap="outerHTML"
+                >
+                    <div class="grid">
+                        <div class="s12 m5">
+                            {% if book.cover %}
+                                <img class="responsive" src="{{ book.get_cover_url }}"/>
+                            {% else %}
+                                No cover image
+                            {% endif %}
                         </div>
-                        <div class="field">
-                            <button>Upload</button>
+                        <div class="s12 m7">
+                            <div class="field label prefix border {% if upload_form.errors.image %}invalid{% endif %}">
+                                <i>image_arrow_up</i>
+                                <input name="image" type="file" required>
+                                <input type="text">
+                                <label>File</label>
+                                {% if upload_form.errors.image %}
+                                    <output class="invalid">{{ upload_form.errors.image.0 }}</output>
+                                {% endif %}
+                            </div>
+                            <div class="field">
+                                <button>Upload</button>
+                            </div>
                         </div>
-                    </form>
-                </div>
-            </div>
+                    </div>
+                </form>
+            {% endpartialdef upload-cover %}
         </div>
     </article>
 {% endblock content %}

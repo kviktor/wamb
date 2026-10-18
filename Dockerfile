@@ -25,6 +25,9 @@ FROM python:${PYTHON_VERSION}-alpine AS application
 ENV PYTHONUNBUFFERED=1 \
     PATH="/app/.venv/bin:$PATH"
 
+# install system dependencies
+RUN apk add libwebp
+
 # setup a non-root user
 RUN addgroup --system --gid 1000 nonroot \
     && adduser --system --uid 1000 --ingroup nonroot --disabled-password nonroot
