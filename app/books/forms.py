@@ -29,13 +29,17 @@ class BookSaveMixin:
 
 def validate_isbn(isbn, field_name="isbn", *, unique_check: bool):
     # replace/ignore dashes and whitespaces
-    isbn = isbn.replace("-", "").replace(" ", "")
+    isbn = isbn.replace("-", "").replace(" ", "").upper()
 
-    # for others raise an error
-    if not str(isbn).isdigit():
-        raise ValidationError({field_name: "ISBN must only contain numbers."})
-
-    if len(isbn) not in (10, 13):
+    # technically a checksum check would be required for a proper validity
+    # but there are books out with invalid isbn too
+    if len(isbn) == 10:
+        if not (isbn[:-1].isdigit() and (isbn[-1].isdigit() or isbn[-1] == "X")):
+            raise ValidationError({field_name: "Invalid ISBN."})
+    elif len(isbn) == 13:
+        if not isbn.isdigit():
+            raise ValidationError({field_name: "ISBN must only contain numbers."})
+    else:
         raise ValidationError({field_name: "ISBN must be either 10 or 13 characters."})
 
     if unique_check and Book.objects.filter(isbn=isbn).exists():

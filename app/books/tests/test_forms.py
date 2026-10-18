@@ -1,7 +1,9 @@
 from unittest import mock
 
 from model_bakery import baker
+from parameterized import parameterized
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from app.books import forms
@@ -36,3 +38,29 @@ class AddByISBNFormTest(TestCase):
         form.save()
         self.assertEqual(book.shelf, shelf)
         self.assertEqual(book.position, 0)
+
+
+class ValidateISBNTest(TestCase):
+    @parameterized.expand(
+        [
+            [""],
+            ["X123456789"],
+            ["123456789Z"],
+            ["123456789012X"],
+            ["12345678901234"],
+            ["123456789"],
+            ["12345678901"],
+        ],
+    )
+    def test_invalid(self, value):
+        with self.assertRaises(ValidationError):
+            forms.validate_isbn(value, unique_check=False)
+
+    @parameterized.expand(
+        [
+            ["123456789X"],
+            ["1234567890123"],
+        ],
+    )
+    def test_valid(self, value):
+        forms.validate_isbn(value, unique_check=False)
