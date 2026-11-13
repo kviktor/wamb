@@ -141,6 +141,10 @@ class MolyClient(Client):
 
     def get_book_by_url(self, url: str):
         response = self.get(url)
+
+        if not response:
+            return None
+
         edition_soup = BeautifulSoup(response, "html.parser")
 
         div_content = edition_soup.find("div", class_="flex_content")
