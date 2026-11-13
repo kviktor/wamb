@@ -249,3 +249,5 @@ SOCIAL_AUTH_PIPELINE = (
 METADATA_SERVICE_ORDER = env.list(
     "METADATA_SERVICE_ORDER", default=["openlibrary", "google_books"]
 )
+
+HTTP_CLIENT_HTTP_PROXY = env.str("HTTP_CLIENT_HTTP_PROXY", default="")

@@ -2,6 +2,8 @@ import time
 
 import httpx2
 
+from django.conf import settings
+
 from app.metadata.models import ResponseLog
 
 
@@ -46,28 +48,46 @@ class Client:
     def head(self, url, **kwargs):
         return self.request("head", url, **kwargs)
 
-    def request(self, method, url, retries=0, **kwargs) -> httpx2.Response | None:
+    def request(
+        self, method, url, retries=0, use_proxy=False, **kwargs
+    ) -> httpx2.Response | None:
         if retries > 3:
             return None
 
         if retries > 0:
             time.sleep(self.get_sleep(retries))
 
+        client_kwargs = {}
+        if use_proxy and settings.HTTP_CLIENT_HTTP_PROXY:
+            client_kwargs["proxy"] = settings.HTTP_CLIENT_HTTP_PROXY
+
         try:
-            fnc = getattr(httpx2, method)
-            response = fnc(
-                url, headers=self.get_headers(), follow_redirects=True, **kwargs
-            )
-            response.raise_for_status()
-            self.log_response(response, None)
+            with httpx2.Client(**client_kwargs) as client:
+                fnc = getattr(client, method)
+
+                response = fnc(
+                    url, headers=self.get_headers(), follow_redirects=True, **kwargs
+                )
+                response.raise_for_status()
+                self.log_response(response, None)
             return response
         except (httpx2.RequestError, httpx2.StreamError) as exc:
             self.log_response(None, exc)
-            return self.request(method, url, retries=retries + 1, **kwargs)
+            return self.request(
+                method, url, retries=retries + 1, use_proxy=use_proxy, **kwargs
+            )
         except httpx2.HTTPStatusError as exc:
             self.log_response(response, exc)
             status_code = exc.response.status_code
+
+            if status_code == 403:
+                return self.request(
+                    method, url, retries=retries + 1, use_proxy=True, **kwargs
+                )
+
             if status_code >= 500 or status_code == 429:
-                return self.request(method, url, retries=retries + 1, **kwargs)
+                return self.request(
+                    method, url, retries=retries + 1, use_proxy=use_proxy, **kwargs
+                )
 
         return None
